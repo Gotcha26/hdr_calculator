@@ -56,11 +56,12 @@ const HDRCalculator = () => {
       const minSpeed = photoDatabase.shutter_speeds.values[settings.speedMin];
       const maxSpeed = photoDatabase.shutter_speeds.values[settings.speedMax];
       
-      if (closestShutter.stop_third < minSpeed.stop_third) {
+      // Vérifier si targetStopThird dépasse les limites AVANT de chercher closestShutter
+      if (targetStopThird < minSpeed.stop_third) {
         speedErrors.min = { speed: closestShutter.display, limit: minSpeed.display };
       }
       
-      if (closestShutter.stop_third > maxSpeed.stop_third) {
+      if (targetStopThird > maxSpeed.stop_third) {
         speedErrors.max = { speed: closestShutter.display, limit: maxSpeed.display };
       }
       
@@ -420,6 +421,29 @@ const HDRCalculator = () => {
     });
   };
 
+  // Fonction pour rendre les suggestions avec lien cliquable uniquement sur "(désactiver)"
+  const renderSuggestion = (sug, index) => {
+    // Chercher si la suggestion contient "Limite astrophoto dépassée"
+    if (sug.includes('Limite astrophoto dépassée')) {
+      return (
+        <li key={index}>
+          ⚠️ Limite astrophoto dépassée{' '}
+          <span 
+            onClick={() => setSettings({...settings, durationLimit: 999})}
+            style={{
+              cursor: 'pointer',
+              textDecoration: 'underline',
+              color: '#fbbf24'
+            }}
+          >
+            (désactiver)
+          </span>
+        </li>
+      );
+    }
+    return <li key={index}>{sug}</li>;
+  };
+
   // Styles CSS inline
   const styles = {
     menuOverlay: {
@@ -550,7 +574,7 @@ const HDRCalculator = () => {
                   <div>
                     <label style={{display: 'block', fontSize: '0.875rem', fontWeight: '600', marginBottom: '8px'}}>ISO</label>
                     <select value={mainValues.iso} onChange={(e) => setMainValues({...mainValues, iso: parseInt(e.target.value)})} style={{width: '100%', padding: '12px', background: 'rgb(30, 41, 59)', border: '1px solid rgb(71, 85, 105)', borderRadius: '8px', color: 'white', fontSize: '16px'}}>
-                      {getValidIsos().map((iso) => (
+                      {filterByIncrementAndLimits(photoDatabase.iso_values.values, settings.increment, settings.isoMin, settings.isoMax).map((iso) => (
                         <option key={iso.stop_third} value={photoDatabase.iso_values.values.indexOf(iso)}>{iso.display}</option>
                       ))}
                     </select>
@@ -646,22 +670,7 @@ const HDRCalculator = () => {
                         <p style={{fontWeight: '600', color: '#22c55e', marginBottom: '8px'}}>✅ SÉQUENCE RÉALISABLE</p>
                         {correction1Result.suggestions.length > 0 && (
                           <ul style={{fontSize: '0.75rem', color: '#86efac', paddingLeft: '20px', marginBottom: '12px'}}>
-                            {correction1Result.suggestions.map((sug, i) => (
-                              <li 
-                                key={i}
-                                onClick={() => {
-                                  if (sug.includes('(désactiver)')) {
-                                    setSettings({...settings, durationLimit: 999});
-                                  }
-                                }}
-                                style={{
-                                  cursor: sug.includes('(désactiver)') ? 'pointer' : 'default',
-                                  textDecoration: sug.includes('(désactiver)') ? 'underline' : 'none'
-                                }}
-                              >
-                                {sug}
-                              </li>
-                            ))}
+                            {correction1Result.suggestions.map((sug, i) => renderSuggestion(sug, i))}
                           </ul>
                         )}
                       </div>
@@ -715,22 +724,7 @@ const HDRCalculator = () => {
                         <p style={{fontWeight: '600', color: '#22c55e', marginBottom: '8px'}}>✅ SÉQUENCE RÉALISABLE</p>
                         {correction2Result.suggestions.length > 0 && (
                           <ul style={{fontSize: '0.75rem', color: '#86efac', paddingLeft: '20px', marginBottom: '12px'}}>
-                            {correction2Result.suggestions.map((sug, i) => (
-                              <li 
-                                key={i}
-                                onClick={() => {
-                                  if (sug.includes('(désactiver)')) {
-                                    setSettings({...settings, durationLimit: 999});
-                                  }
-                                }}
-                                style={{
-                                  cursor: sug.includes('(désactiver)') ? 'pointer' : 'default',
-                                  textDecoration: sug.includes('(désactiver)') ? 'underline' : 'none'
-                                }}
-                              >
-                                {sug}
-                              </li>
-                            ))}
+                            {correction2Result.suggestions.map((sug, i) => renderSuggestion(sug, i))}
                           </ul>
                         )}
                       </div>
