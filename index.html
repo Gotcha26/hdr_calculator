@@ -16,13 +16,28 @@
 <body>
   <div id="root"></div>
   
-  <!-- Base de donnÃ©es -->
+  <!-- 1. Base de données -->
   <script src="data/photoDatabase.js"></script>
   
-  <!-- Utilitaires -->
+  <!-- 2. Utilitaires -->
   <script src="utils/utils.js"></script>
   
-  <!-- Application principale -->
+  <!-- 3. Styles (variable globale appStyles) -->
+  <script src="styles.js"></script>
+  
+  <!-- 4. Helpers (fonction globale renderSuggestion) -->
+  <script type="text/babel" src="utils/helpers.js"></script>
+  
+  <!-- 5. Composants (variables globales) -->
+  <script type="text/babel" src="components/Header.jsx"></script>
+  <script type="text/babel" src="components/Menu.jsx"></script>
+  <script type="text/babel" src="components/Footer.jsx"></script>
+  <script type="text/babel" src="components/MainSection.jsx"></script>
+  <script type="text/babel" src="components/CorrectionISO.jsx"></script>
+  <script type="text/babel" src="components/CorrectionAperture.jsx"></script>
+  <script type="text/babel" src="components/SettingsPage.jsx"></script>
+  
+  <!-- 6. Application principale -->
   <script type="text/babel" src="App.jsx"></script>
 </body>
 </html>
