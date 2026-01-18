@@ -6,6 +6,7 @@ const HDRCalculator = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [section2Open, setSection2Open] = useState(false);
   const [section3Open, setSection3Open] = useState(false);
+  const [section4Open, setSection4Open] = useState(false);
   
   // Paramètres
   const [settings, setSettings] = useState({
@@ -18,7 +19,13 @@ const HDRCalculator = () => {
     apertureMin: 9,
     apertureMax: 27,
     sensorDynamicRange: 15,
-    durationLimit: 2.5
+    durationLimit: 2.5,
+    maxBrackets: 7,
+    // Paramètres artistiques
+    artisticApertureMin: 12,  // f/4.0 - Zone acceptable
+    artisticApertureMax: 18,  // f/8 - Zone de netteté optimale
+    artisticIsoMin: 9,        // ISO 400
+    artisticIsoMax: 15        // ISO 1600
   });
 
   // Valeurs principales
@@ -32,6 +39,14 @@ const HDRCalculator = () => {
 
   const [correction1Iso, setCorrection1Iso] = useState(12);
   const [correction2Aperture, setCorrection2Aperture] = useState(9);
+  
+  // Valeurs pour la section Plage entière
+  const [rangeValues, setRangeValues] = useState({
+    aperture: 12,  // f/4.0
+    iso: 6,        // 200
+    speedMin: 13,  // 3.2s
+    speedMax: 49   // 1/1250
+  });
 
   // Calcul séquence HDR
   const calculateHDRSequence = (centerShutterIndex, centerApertureIndex, centerIsoIndex, brackets, spacing, skipSuggestions = false) => {
@@ -115,6 +130,246 @@ const HDRCalculator = () => {
     }
     
     return { sequence, totalDuration, errors, suggestions, speedErrors, durationExceeded, durationWarning };
+  };
+
+  // Calcul Plage entière (Section 4)
+  const calculateRangePleine = () => {
+    const errors = [];
+    const suggestions = [];
+    
+    const minSpeed = photoDatabase.shutter_speeds.values[rangeValues.speedMin];
+    const maxSpeed = photoDatabase.shutter_speeds.values[rangeValues.speedMax];
+    
+    // Vérifier que speedMax est plus rapide que speedMin
+    if (maxSpeed.stop_third <= minSpeed.stop_third) {
+      errors.push('La vitesse maximale doit être plus rapide que la vitesse minimale');
+      return { 
+        totalEV: 0, 
+        totalCrans: 0, 
+        centerSpeed: minSpeed,
+        totalDuration: 0,
+        possibleSpacings: [], 
+        suggestions: [], 
+        errors 
+      };
+    }
+    
+    // Calculer l'amplitude en stop_third (différence entre vitesses)
+    const totalCrans = maxSpeed.stop_third - minSpeed.stop_third;
+    const totalEV = totalCrans / 3;
+    
+    // Calculer la vitesse centrale (milieu de la plage)
+    const centerStopThird = Math.round((minSpeed.stop_third + maxSpeed.stop_third) / 2);
+    const centerSpeed = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
+      Math.abs(curr.stop_third - centerStopThird) < Math.abs(prev.stop_third - centerStopThird) ? curr : prev
+    );
+    
+    // Calculer l'espacement optimal pour couvrir toute la plage
+    const possibleSpacings = [];
+    const cameraData = cameraTypes[settings.cameraType];
+    const minTimePerShot = cameraData.minTime + cameraData.bufferDelay;
+    
+    // Obtenir les espacements possibles selon l'incrément
+    const availableSpacings = getSpacingOptions(settings.increment);
+    
+    // Pour chaque nombre d'images possible (impair, ≤ maxBrackets)
+    // Parcourir du plus grand au plus petit pour privilégier les séquences plus fines
+    for (let brackets = settings.maxBrackets; brackets >= 3; brackets -= 2) {
+      const halfBrackets = Math.floor(brackets / 2);
+      
+      // Calculer l'espacement maximal qui respecte les limites
+      // Distance de la vue centrée aux limites
+      const distanceToMin = centerSpeed.stop_third - minSpeed.stop_third; // en tiers
+      const distanceToMax = maxSpeed.stop_third - centerSpeed.stop_third; // en tiers
+      const maxDistanceEachSide = Math.min(distanceToMin, distanceToMax);
+      
+      // Espacement maximal = distance disponible / nombre d'images d'un côté
+      const maxSpacingThirds = maxDistanceEachSide / halfBrackets;
+      const maxSpacingEV = maxSpacingThirds / 3;
+      
+      // Trouver le plus grand espacement disponible qui ne dépasse pas le max
+      for (let i = availableSpacings.length - 1; i >= 0; i--) {
+        const spacing = availableSpacings[i];
+        if (spacing <= maxSpacingEV) {
+          possibleSpacings.push({
+            value: spacing,
+            brackets: brackets
+          });
+          break; // On prend le plus grand possible pour ce nombre d'images
+        }
+      }
+    }
+    
+    // Calculer la durée pour la configuration optimale (plus grand nombre de brackets)
+    let totalDuration = 0;
+    if (possibleSpacings.length > 0) {
+      // Prendre la première configuration (qui a le plus grand nombre de brackets)
+      const optimalConfig = possibleSpacings[0];
+      const halfBrackets = Math.floor(optimalConfig.brackets / 2);
+      
+      for (let i = -halfBrackets; i <= halfBrackets; i++) {
+        const evShift = i * optimalConfig.value;
+        const targetStopThird = centerSpeed.stop_third + (evShift * 3);
+        
+        let closestShutter = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
+          Math.abs(curr.stop_third - targetStopThird) < Math.abs(prev.stop_third - targetStopThird) ? curr : prev
+        );
+        
+        const shotDuration = Math.max(closestShutter.numeric, minTimePerShot);
+        totalDuration += shotDuration;
+      }
+    }
+    
+    // Suggestions artistiques améliorées
+    if (possibleSpacings.length === 0) {
+      suggestions.push('⚠️ Amplitude trop faible : augmentez l\'écart entre vitesses min/max');
+    } else {
+      // Configuration optimale (plus grand nombre de brackets)
+      const optimalConfig = possibleSpacings[0];
+      
+      // Recommandations de base
+      const basicRecommendations = [];
+      basicRecommendations.push(`${centerSpeed.display}`); // Vue centrée
+      basicRecommendations.push(`${optimalConfig.brackets} images`); // Séquence
+      basicRecommendations.push(`${optimalConfig.value.toFixed(2)} EV`); // Écart type
+      
+      // Valeurs actuelles
+      const currentIso = photoDatabase.iso_values.values[rangeValues.iso];
+      const currentAperture = photoDatabase.aperture_values.values[rangeValues.aperture];
+      
+      // Valeurs artistiques
+      const artisticMinIso = photoDatabase.iso_values.values[settings.artisticIsoMin];
+      const artisticMaxIso = photoDatabase.iso_values.values[settings.artisticIsoMax];
+      const artisticMinAperture = photoDatabase.aperture_values.values[settings.artisticApertureMin];
+      const artisticMaxAperture = photoDatabase.aperture_values.values[settings.artisticApertureMax];
+      
+      const halfBrackets = Math.floor(optimalConfig.brackets / 2);
+      
+      // Recommandations avancées
+      const advancedRecommendations = [];
+      
+      // CAS 1 : Priorité ISO (baisser l'ISO)
+      const isoShift_cas1 = artisticMinIso.stop_third - currentIso.stop_third;
+      
+      let cas1_data = {
+        hasOptimization: isoShift_cas1 < 0,
+        isoFrom: currentIso.display,
+        isoTo: artisticMinIso.display,
+        stopThird: isoShift_cas1,
+        duration: 0
+      };
+      
+      if (cas1_data.hasOptimization) {
+        // Calculer vue centrée compensée
+        const newCenterSpeed_cas1 = centerSpeed.stop_third - isoShift_cas1;
+        const centerSpeedObj_cas1 = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
+          Math.abs(curr.stop_third - newCenterSpeed_cas1) < Math.abs(prev.stop_third - newCenterSpeed_cas1) ? curr : prev
+        );
+        
+        // Calculer durée
+        for (let i = -halfBrackets; i <= halfBrackets; i++) {
+          const evShift = i * optimalConfig.value;
+          const targetStopThird = centerSpeedObj_cas1.stop_third + (evShift * 3);
+          let closestShutter = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
+            Math.abs(curr.stop_third - targetStopThird) < Math.abs(prev.stop_third - targetStopThird) ? curr : prev
+          );
+          cas1_data.duration += Math.max(closestShutter.numeric, minTimePerShot);
+        }
+      }
+      
+      // CAS 2 : Priorité Ouverture (fermer le diaphragme)
+      const apertureShift_cas2 = artisticMaxAperture.stop_third - currentAperture.stop_third;
+      
+      let cas2_data = {
+        hasOptimization: apertureShift_cas2 > 0,
+        apertureFrom: currentAperture.display,
+        apertureTo: artisticMaxAperture.display,
+        stopThird: apertureShift_cas2,
+        duration: 0
+      };
+      
+      if (cas2_data.hasOptimization) {
+        // Vue centrée reste la même pour Cas 2
+        // Calculer durée avec vue centrée originale
+        for (let i = -halfBrackets; i <= halfBrackets; i++) {
+          const evShift = i * optimalConfig.value;
+          const targetStopThird = centerSpeed.stop_third + (evShift * 3);
+          let closestShutter = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
+            Math.abs(curr.stop_third - targetStopThird) < Math.abs(prev.stop_third - targetStopThird) ? curr : prev
+          );
+          cas2_data.duration += Math.max(closestShutter.numeric, minTimePerShot);
+        }
+      }
+      
+      // CAS 3 : Qualité + (Synthèse)
+      const totalShift_cas3 = (isoShift_cas1 < 0 ? isoShift_cas1 : 0) + (apertureShift_cas2 > 0 ? apertureShift_cas2 : 0);
+      const newCenterSpeed_cas3_stopThird = centerSpeed.stop_third - totalShift_cas3;
+      const centerSpeedObj_cas3 = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
+        Math.abs(curr.stop_third - newCenterSpeed_cas3_stopThird) < Math.abs(prev.stop_third - newCenterSpeed_cas3_stopThird) ? curr : prev
+      );
+      
+      // Calculer poses longue et rapide pour Cas 3
+      let cas3_poseLongue = null;
+      let cas3_poseRapide = null;
+      let cas3_duration = 0;
+      
+      for (let i = -halfBrackets; i <= halfBrackets; i++) {
+        const evShift = i * optimalConfig.value;
+        const targetStopThird = centerSpeedObj_cas3.stop_third + (evShift * 3);
+        let closestShutter = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
+          Math.abs(curr.stop_third - targetStopThird) < Math.abs(prev.stop_third - targetStopThird) ? curr : prev
+        );
+        
+        if (i === -halfBrackets) cas3_poseLongue = closestShutter;
+        if (i === halfBrackets) cas3_poseRapide = closestShutter;
+        
+        cas3_duration += Math.max(closestShutter.numeric, minTimePerShot);
+      }
+      
+      let cas3_data = {
+        isoOptimal: cas1_data.hasOptimization ? artisticMinIso.display : currentIso.display,
+        isoChanged: cas1_data.hasOptimization,
+        apertureOptimal: cas2_data.hasOptimization ? artisticMaxAperture.display : currentAperture.display,
+        apertureChanged: cas2_data.hasOptimization,
+        vueCentree: centerSpeedObj_cas3.display,
+        stopThird: totalShift_cas3,
+        brackets: optimalConfig.brackets,
+        spacing: optimalConfig.value,
+        poseLongue: cas3_poseLongue.display,
+        poseRapide: cas3_poseRapide.display,
+        duration: cas3_duration
+      };
+      
+      // Formatter les données pour l'affichage
+      advancedRecommendations.push({
+        type: 'CAS_1',
+        data: cas1_data
+      });
+      
+      advancedRecommendations.push({
+        type: 'CAS_2',
+        data: cas2_data
+      });
+      
+      advancedRecommendations.push({
+        type: 'CAS_3',
+        data: cas3_data
+      });
+      
+      // Retourner les recommandations
+      suggestions.push(...basicRecommendations);
+      suggestions.push(...advancedRecommendations);
+    }
+    
+    return { 
+      totalEV, 
+      totalCrans, 
+      centerSpeed,
+      totalDuration,
+      possibleSpacings, 
+      suggestions, 
+      errors 
+    };
   };
 
   // Calcul Correction #1 (ISO)
@@ -353,6 +608,7 @@ const HDRCalculator = () => {
 
   const correction1Result = calculateCorrection1();
   const correction2Result = calculateCorrection2();
+  const rangeResult = calculateRangePleine();
 
   // Filtrer les ISO valides
   const getValidIsos = () => {
@@ -460,6 +716,17 @@ const HDRCalculator = () => {
                 photoDatabase={photoDatabase}
                 getValidApertures={getValidApertures}
                 renderSuggestion={renderSuggestion}
+              />
+
+              <RangePleine
+                section4Open={section4Open}
+                setSection4Open={setSection4Open}
+                rangeValues={rangeValues}
+                setRangeValues={setRangeValues}
+                rangeResult={rangeResult}
+                settings={settings}
+                photoDatabase={photoDatabase}
+                filterByIncrementAndLimits={filterByIncrementAndLimits}
               />
             </div>
           ) : (

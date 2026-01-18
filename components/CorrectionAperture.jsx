@@ -17,7 +17,7 @@ const CorrectionAperture = ({
 }) => {
   
   return (
-    <div style={appStyles.sectionAperture}>
+    <div style={{...appStyles.sectionAperture, marginBottom: '24px'}}>
       <h2 
         onClick={() => setSection3Open(!section3Open)}
         style={{...appStyles.sectionTitle, color: appStyles.titleAperture}}

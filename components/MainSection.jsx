@@ -19,7 +19,12 @@ const MainSection = ({
         📷 Vue centrée
       </h2>
 
-      <div style={appStyles.formGrid}>
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+        gap: '16px',
+        marginBottom: '24px'
+      }}>
         <div>
           <label style={appStyles.formLabel}>Ouverture</label>
           <select 

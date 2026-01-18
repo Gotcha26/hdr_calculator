@@ -1,4 +1,4 @@
-// photoDatabase.js - Base de donnÃ©es photographique
+// photoDatabase.js - Base de données photographique
 const photoDatabase = {
   "shutter_speeds": {
     "values": [
@@ -138,7 +138,7 @@ const photoDatabase = {
 };
 
 const cameraTypes = {
-  'mirrorless_electronic': { name: 'Mirrorless (obturateur Ã©lectronique)', minTime: 0.020, bufferDelay: 0.119 },
-  'mirrorless_mechanical': { name: 'Mirrorless (obturateur mÃ©canique)', minTime: 0.050, bufferDelay: 0.114 },
-  'reflex_mechanical': { name: 'Reflex (obturateur mÃ©canique)', minTime: 0.080, bufferDelay: 0.144 }
+  'mirrorless_electronic': { name: 'Mirrorless (obturateur électronique)', minTime: 0.020, bufferDelay: 0.119 },
+  'mirrorless_mechanical': { name: 'Mirrorless (obturateur mécanique)', minTime: 0.050, bufferDelay: 0.114 },
+  'reflex_mechanical': { name: 'Reflex (obturateur mécanique)', minTime: 0.080, bufferDelay: 0.160 }
 };
