@@ -6,3 +6,7 @@
 
 # Interdire l’indexation
 Options -Indexes
+
+<Files "deploy.php">
+  Require all denied
+</Files>

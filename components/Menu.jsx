@@ -1,8 +1,14 @@
 // components/Menu.jsx - Menu latéral de navigation
 
-
-
 const Menu = ({ menuOpen, setMenuOpen, currentPage, setCurrentPage }) => {
+  const [version, setVersion] = React.useState('v1.0 dev');
+  
+  React.useEffect(() => {
+    if (typeof versionInfo !== 'undefined') {
+      versionInfo.getFullVersion().then(v => setVersion(v));
+    }
+  }, []);
+  
   return (
     <>
       {menuOpen && (
@@ -20,7 +26,7 @@ const Menu = ({ menuOpen, setMenuOpen, currentPage, setCurrentPage }) => {
           <h2 style={appStyles.headerTitle}>
             HDR Calculator
           </h2>
-          <p style={{...appStyles.headerSubtitle, marginTop: '4px'}}>v1.0 Complète</p>
+          <p style={{...appStyles.headerSubtitle, marginTop: '4px'}}>{version}</p>
         </div>
         
         <div 
