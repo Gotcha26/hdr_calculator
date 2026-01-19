@@ -2,3 +2,6 @@ REFACTORING_GUIDE.md
 *.bak
 ToDo.md
 deploy.php
+
+# Fichier généré automatiquement lors du déploiement
+version.js
