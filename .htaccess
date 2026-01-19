@@ -1,0 +1,8 @@
+# Bloquer l’accès aux fichiers/dossiers cachés
+# Logiquement le dossier .git ne devrait pas se retrouver accessible publiquement !
+<FilesMatch "^\.">
+    Require all denied
+</FilesMatch>
+
+# Interdire l’indexation
+Options -Indexes
