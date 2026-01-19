@@ -1,18 +1,24 @@
 // utils.js - Fonctions utilitaires
 
-// Filtrage des valeurs selon l'incrÃ©ment et les limites
+// Filtrage des valeurs selon l'incrément et les limites
 function filterByIncrementAndLimits(values, increment, minIndex, maxIndex) {
   const filtered = values.filter((_, idx) => idx >= minIndex && idx <= maxIndex);
   
+  // Filtrage basé sur stop_sixth (sixièmes de stop)
+  // 1:1 (stops entiers) = multiples de 6
+  // 1:2 (demi-stops) = multiples de 3
+  // 1:3 (tiers de stops) = multiples de 2
   if (increment === '1:1') {
-    return filtered.filter(v => v.stop_third % 3 === 0);
+    return filtered.filter(v => v.stop_sixth % 6 === 0);
   } else if (increment === '1:2') {
-    return filtered.filter(v => v.stop_third % 1.5 === 0);
+    return filtered.filter(v => v.stop_sixth % 3 === 0);
+  } else if (increment === '1:3') {
+    return filtered.filter(v => v.stop_sixth % 2 === 0);
   }
   return filtered;
 }
 
-// Options d'espacement selon l'incrÃ©ment
+// Options d'espacement selon l'incrément
 function getSpacingOptions(increment) {
   if (increment === '1:1') {
     return [1, 2, 3];

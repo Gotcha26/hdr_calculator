@@ -142,7 +142,7 @@ const RangePleine = ({
               <div>
                 <p style={appStyles.resultLabel}>Équivalent en crans</p>
                 <p style={appStyles.resultValue}>
-                  {rangeResult.totalCrans} cran{rangeResult.totalCrans > 1 ? 's' : ''}
+                  {Math.round(rangeResult.totalCrans)} cran{Math.round(rangeResult.totalCrans) > 1 ? 's' : ''}
                 </p>
               </div>
               <div>
@@ -231,7 +231,7 @@ const RangePleine = ({
                                     {data.isoFrom} → <strong>{data.isoTo}</strong>
                                   </p>
                                   <p style={{marginBottom: '4px'}}>
-                                    Nombre de stops : <strong>{data.stopThird}</strong>
+                                    Nombre de stops : <strong>{data.stopEV > 0 ? '+' : ''}{data.stopEV} EV</strong> ({data.stopSixth} sixths)
                                   </p>
                                   <p>
                                     Durée séquence : <strong>{data.duration.toFixed(2)}s</strong>
@@ -243,7 +243,7 @@ const RangePleine = ({
                                     <strong>Pas</strong> d'optimisation recommandable.
                                   </p>
                                   <p style={{marginBottom: '4px'}}>
-                                    Nombre de stops : <strong>0</strong>
+                                    Nombre de stops : <strong>0 EV</strong> (0 sixths)
                                   </p>
                                   <p>
                                     Durée séquence : <strong>{data.duration.toFixed(2)}s</strong>
@@ -273,7 +273,7 @@ const RangePleine = ({
                                     {data.apertureFrom} → <strong>{data.apertureTo}</strong>
                                   </p>
                                   <p style={{marginBottom: '4px'}}>
-                                    Nombre de stops : <strong>+{data.stopThird}</strong>
+                                    Nombre de stops : <strong>{data.stopEV > 0 ? '+' : ''}{data.stopEV} EV</strong> ({data.stopSixth > 0 ? '+' : ''}{data.stopSixth} sixths)
                                   </p>
                                   <p>
                                     Durée séquence : <strong>{data.duration.toFixed(2)}s</strong>
@@ -285,7 +285,7 @@ const RangePleine = ({
                                     <strong>Pas</strong> d'optimisation recommandable.
                                   </p>
                                   <p style={{marginBottom: '4px'}}>
-                                    Nombre de stops : <strong>0</strong>
+                                    Nombre de stops : <strong>0 EV</strong> (0 sixths)
                                   </p>
                                   <p>
                                     Durée séquence : <strong>{data.duration.toFixed(2)}s</strong>
@@ -320,7 +320,7 @@ const RangePleine = ({
                                 Vue centrée recalculée : <strong>{data.vueCentree}</strong>
                               </p>
                               <p style={{marginBottom: '4px'}}>
-                                Nombre de stops : <strong>{data.stopThird}</strong>
+                                Nombre de stops : <strong>{data.stopEV > 0 ? '+' : ''}{data.stopEV} EV</strong> ({data.stopSixth > 0 ? '+' : ''}{data.stopSixth} sixths)
                               </p>
                               <p style={{marginBottom: '4px'}}>
                                 Séquence : <strong>{data.brackets} images</strong>

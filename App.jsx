@@ -63,20 +63,20 @@ const HDRCalculator = () => {
     
     for (let i = -halfBrackets; i <= halfBrackets; i++) {
       const evShift = i * spacing;
-      const targetStopThird = photoDatabase.shutter_speeds.values[centerShutterIndex].stop_third + (evShift * 3);
+      const targetStopSixth = photoDatabase.shutter_speeds.values[centerShutterIndex].stop_sixth + (evShift * 6);
       
       let closestShutter = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
-        Math.abs(curr.stop_third - targetStopThird) < Math.abs(prev.stop_third - targetStopThird) ? curr : prev
+        Math.abs(curr.stop_sixth - targetStopSixth) < Math.abs(prev.stop_sixth - targetStopSixth) ? curr : prev
       );
       
       const minSpeed = photoDatabase.shutter_speeds.values[settings.speedMin];
       const maxSpeed = photoDatabase.shutter_speeds.values[settings.speedMax];
       
-      if (targetStopThird < minSpeed.stop_third) {
+      if (targetStopSixth < minSpeed.stop_sixth) {
         speedErrors.min = { speed: closestShutter.display, limit: minSpeed.display };
       }
       
-      if (targetStopThird > maxSpeed.stop_third) {
+      if (targetStopSixth > maxSpeed.stop_sixth) {
         speedErrors.max = { speed: closestShutter.display, limit: maxSpeed.display };
       }
       
@@ -109,9 +109,9 @@ const HDRCalculator = () => {
       const minIso = photoDatabase.iso_values.values[settings.isoMin];
       const currentIso = photoDatabase.iso_values.values[centerIsoIndex];
       
-      if (currentIso.stop_third > minIso.stop_third) {
+      if (currentIso.stop_sixth > minIso.stop_sixth) {
         const testIsoIndex = settings.isoMin;
-        const isoShift = currentIso.stop_third - minIso.stop_third;
+        const isoShift = currentIso.stop_sixth - minIso.stop_sixth;
         const testShutterIndex = centerShutterIndex - isoShift;
         
         const testResult = calculateHDRSequence(testShutterIndex, centerApertureIndex, testIsoIndex, brackets, spacing, true);
@@ -141,7 +141,7 @@ const HDRCalculator = () => {
     const maxSpeed = photoDatabase.shutter_speeds.values[rangeValues.speedMax];
     
     // Vérifier que speedMax est plus rapide que speedMin
-    if (maxSpeed.stop_third <= minSpeed.stop_third) {
+    if (maxSpeed.stop_sixth <= minSpeed.stop_sixth) {
       errors.push('La vitesse maximale doit être plus rapide que la vitesse minimale');
       return { 
         totalEV: 0, 
@@ -154,14 +154,24 @@ const HDRCalculator = () => {
       };
     }
     
-    // Calculer l'amplitude en stop_third (différence entre vitesses)
-    const totalCrans = maxSpeed.stop_third - minSpeed.stop_third;
-    const totalEV = totalCrans / 3;
+    // Calculer l'amplitude en stop_sixth (différence entre vitesses)
+    const totalStopSixths = maxSpeed.stop_sixth - minSpeed.stop_sixth;
+    const totalEV = totalStopSixths / 6;
+    
+    // Convertir en crans selon l'incrément
+    let totalCrans;
+    if (settings.increment === '1:1') {
+      totalCrans = totalStopSixths / 6; // 1 cran = 1 stop = 6 sixièmes
+    } else if (settings.increment === '1:2') {
+      totalCrans = totalStopSixths / 3; // 1 cran = 1/2 stop = 3 sixièmes
+    } else { // 1:3
+      totalCrans = totalStopSixths / 2; // 1 cran = 1/3 stop = 2 sixièmes
+    }
     
     // Calculer la vitesse centrale (milieu de la plage)
-    const centerStopThird = Math.round((minSpeed.stop_third + maxSpeed.stop_third) / 2);
+    const centerStopSixth = Math.round((minSpeed.stop_sixth + maxSpeed.stop_sixth) / 2);
     const centerSpeed = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
-      Math.abs(curr.stop_third - centerStopThird) < Math.abs(prev.stop_third - centerStopThird) ? curr : prev
+      Math.abs(curr.stop_sixth - centerStopSixth) < Math.abs(prev.stop_sixth - centerStopSixth) ? curr : prev
     );
     
     // Calculer l'espacement optimal pour couvrir toute la plage
@@ -179,13 +189,13 @@ const HDRCalculator = () => {
       
       // Calculer l'espacement maximal qui respecte les limites
       // Distance de la vue centrée aux limites
-      const distanceToMin = centerSpeed.stop_third - minSpeed.stop_third; // en tiers
-      const distanceToMax = maxSpeed.stop_third - centerSpeed.stop_third; // en tiers
+      const distanceToMin = centerSpeed.stop_sixth - minSpeed.stop_sixth; // en tiers
+      const distanceToMax = maxSpeed.stop_sixth - centerSpeed.stop_sixth; // en tiers
       const maxDistanceEachSide = Math.min(distanceToMin, distanceToMax);
       
       // Espacement maximal = distance disponible / nombre d'images d'un côté
-      const maxSpacingThirds = maxDistanceEachSide / halfBrackets;
-      const maxSpacingEV = maxSpacingThirds / 3;
+      const maxSpacingSixths = maxDistanceEachSide / halfBrackets;
+      const maxSpacingEV = maxSpacingSixths / 6;
       
       // Trouver le plus grand espacement disponible qui ne dépasse pas le max
       for (let i = availableSpacings.length - 1; i >= 0; i--) {
@@ -209,10 +219,10 @@ const HDRCalculator = () => {
       
       for (let i = -halfBrackets; i <= halfBrackets; i++) {
         const evShift = i * optimalConfig.value;
-        const targetStopThird = centerSpeed.stop_third + (evShift * 3);
+        const targetStopSixth = centerSpeed.stop_sixth + (evShift * 6);
         
         let closestShutter = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
-          Math.abs(curr.stop_third - targetStopThird) < Math.abs(prev.stop_third - targetStopThird) ? curr : prev
+          Math.abs(curr.stop_sixth - targetStopSixth) < Math.abs(prev.stop_sixth - targetStopSixth) ? curr : prev
         );
         
         const shotDuration = Math.max(closestShutter.numeric, minTimePerShot);
@@ -249,42 +259,44 @@ const HDRCalculator = () => {
       const advancedRecommendations = [];
       
       // CAS 1 : Priorité ISO (baisser l'ISO)
-      const isoShift_cas1 = artisticMinIso.stop_third - currentIso.stop_third;
+      const isoShift_cas1 = artisticMinIso.stop_sixth - currentIso.stop_sixth;
       
       let cas1_data = {
         hasOptimization: isoShift_cas1 < 0,
         isoFrom: currentIso.display,
         isoTo: artisticMinIso.display,
-        stopThird: isoShift_cas1,
+        stopSixth: isoShift_cas1,
+        stopEV: (isoShift_cas1 / 6).toFixed(2),
         duration: 0
       };
       
       if (cas1_data.hasOptimization) {
         // Calculer vue centrée compensée
-        const newCenterSpeed_cas1 = centerSpeed.stop_third - isoShift_cas1;
+        const newCenterSpeed_cas1 = centerSpeed.stop_sixth - isoShift_cas1;
         const centerSpeedObj_cas1 = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
-          Math.abs(curr.stop_third - newCenterSpeed_cas1) < Math.abs(prev.stop_third - newCenterSpeed_cas1) ? curr : prev
+          Math.abs(curr.stop_sixth - newCenterSpeed_cas1) < Math.abs(prev.stop_sixth - newCenterSpeed_cas1) ? curr : prev
         );
         
         // Calculer durée
         for (let i = -halfBrackets; i <= halfBrackets; i++) {
           const evShift = i * optimalConfig.value;
-          const targetStopThird = centerSpeedObj_cas1.stop_third + (evShift * 3);
+          const targetStopSixth = centerSpeedObj_cas1.stop_sixth + (evShift * 6);
           let closestShutter = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
-            Math.abs(curr.stop_third - targetStopThird) < Math.abs(prev.stop_third - targetStopThird) ? curr : prev
+            Math.abs(curr.stop_sixth - targetStopSixth) < Math.abs(prev.stop_sixth - targetStopSixth) ? curr : prev
           );
           cas1_data.duration += Math.max(closestShutter.numeric, minTimePerShot);
         }
       }
       
       // CAS 2 : Priorité Ouverture (fermer le diaphragme)
-      const apertureShift_cas2 = artisticMaxAperture.stop_third - currentAperture.stop_third;
+      const apertureShift_cas2 = artisticMaxAperture.stop_sixth - currentAperture.stop_sixth;
       
       let cas2_data = {
         hasOptimization: apertureShift_cas2 > 0,
         apertureFrom: currentAperture.display,
         apertureTo: artisticMaxAperture.display,
-        stopThird: apertureShift_cas2,
+        stopSixth: apertureShift_cas2,
+        stopEV: (apertureShift_cas2 / 6).toFixed(2),
         duration: 0
       };
       
@@ -293,9 +305,9 @@ const HDRCalculator = () => {
         // Calculer durée avec vue centrée originale
         for (let i = -halfBrackets; i <= halfBrackets; i++) {
           const evShift = i * optimalConfig.value;
-          const targetStopThird = centerSpeed.stop_third + (evShift * 3);
+          const targetStopSixth = centerSpeed.stop_sixth + (evShift * 6);
           let closestShutter = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
-            Math.abs(curr.stop_third - targetStopThird) < Math.abs(prev.stop_third - targetStopThird) ? curr : prev
+            Math.abs(curr.stop_sixth - targetStopSixth) < Math.abs(prev.stop_sixth - targetStopSixth) ? curr : prev
           );
           cas2_data.duration += Math.max(closestShutter.numeric, minTimePerShot);
         }
@@ -303,9 +315,9 @@ const HDRCalculator = () => {
       
       // CAS 3 : Qualité + (Synthèse)
       const totalShift_cas3 = (isoShift_cas1 < 0 ? isoShift_cas1 : 0) + (apertureShift_cas2 > 0 ? apertureShift_cas2 : 0);
-      const newCenterSpeed_cas3_stopThird = centerSpeed.stop_third - totalShift_cas3;
+      const newCenterSpeed_cas3_stopThird = centerSpeed.stop_sixth - totalShift_cas3;
       const centerSpeedObj_cas3 = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
-        Math.abs(curr.stop_third - newCenterSpeed_cas3_stopThird) < Math.abs(prev.stop_third - newCenterSpeed_cas3_stopThird) ? curr : prev
+        Math.abs(curr.stop_sixth - newCenterSpeed_cas3_stopThird) < Math.abs(prev.stop_sixth - newCenterSpeed_cas3_stopThird) ? curr : prev
       );
       
       // Calculer poses longue et rapide pour Cas 3
@@ -315,9 +327,9 @@ const HDRCalculator = () => {
       
       for (let i = -halfBrackets; i <= halfBrackets; i++) {
         const evShift = i * optimalConfig.value;
-        const targetStopThird = centerSpeedObj_cas3.stop_third + (evShift * 3);
+        const targetStopSixth = centerSpeedObj_cas3.stop_sixth + (evShift * 6);
         let closestShutter = photoDatabase.shutter_speeds.values.reduce((prev, curr) => 
-          Math.abs(curr.stop_third - targetStopThird) < Math.abs(prev.stop_third - targetStopThird) ? curr : prev
+          Math.abs(curr.stop_sixth - targetStopSixth) < Math.abs(prev.stop_sixth - targetStopSixth) ? curr : prev
         );
         
         if (i === -halfBrackets) cas3_poseLongue = closestShutter;
@@ -332,7 +344,8 @@ const HDRCalculator = () => {
         apertureOptimal: cas2_data.hasOptimization ? artisticMaxAperture.display : currentAperture.display,
         apertureChanged: cas2_data.hasOptimization,
         vueCentree: centerSpeedObj_cas3.display,
-        stopThird: totalShift_cas3,
+        stopSixth: totalShift_cas3,
+        stopEV: (totalShift_cas3 / 6).toFixed(2),
         brackets: optimalConfig.brackets,
         spacing: optimalConfig.value,
         poseLongue: cas3_poseLongue.display,
@@ -374,8 +387,8 @@ const HDRCalculator = () => {
 
   // Calcul Correction #1 (ISO)
   const calculateCorrection1 = () => {
-    const isoShift = photoDatabase.iso_values.values[correction1Iso].stop_third - 
-                     photoDatabase.iso_values.values[mainValues.iso].stop_third;
+    const isoShift = photoDatabase.iso_values.values[correction1Iso].stop_sixth - 
+                     photoDatabase.iso_values.values[mainValues.iso].stop_sixth;
     
     const adjustedShutterIndex = mainValues.shutter + isoShift;
     
@@ -402,7 +415,7 @@ const HDRCalculator = () => {
         specificSuggestions.push(`→ Vitesse trop lente : diminuez l'ISO`);
       }
     } else {
-      if (currentIso.stop_third > minIso.stop_third) {
+      if (currentIso.stop_sixth > minIso.stop_sixth) {
         let bestIsoIndex = correction1Iso;
         let bestIso = currentIso;
         
@@ -418,7 +431,7 @@ const HDRCalculator = () => {
         for (let i = currentIndexInFiltered - 1; i >= 0; i--) {
           const testIso = filteredIsos[i];
           const testIsoIndex = photoDatabase.iso_values.values.indexOf(testIso);
-          const testIsoShift = testIso.stop_third - photoDatabase.iso_values.values[mainValues.iso].stop_third;
+          const testIsoShift = testIso.stop_sixth - photoDatabase.iso_values.values[mainValues.iso].stop_sixth;
           const testShutterIndex = mainValues.shutter + testIsoShift;
           
           const testResult = calculateHDRSequence(
@@ -441,7 +454,7 @@ const HDRCalculator = () => {
         if (bestIsoIndex !== correction1Iso) {
           const cransDiff = Math.abs(currentIndexInFiltered - filteredIsos.indexOf(bestIso));
           
-          const bestIsoShift = bestIso.stop_third - photoDatabase.iso_values.values[mainValues.iso].stop_third;
+          const bestIsoShift = bestIso.stop_sixth - photoDatabase.iso_values.values[mainValues.iso].stop_sixth;
           const bestShutterIndex = mainValues.shutter + bestIsoShift;
           const bestResult = calculateHDRSequence(
             bestShutterIndex,
@@ -464,7 +477,7 @@ const HDRCalculator = () => {
           const optimalDurationStatus = bestResult.durationWarning ? '⚠️ Dépasse limite' : '✅ Compatible';
           specificSuggestions.push(`🎯 Durée optimale : ${bestResult.totalDuration.toFixed(2)}s - ${optimalDurationStatus}`);
           
-        } else if (bestIso.stop_third > minIso.stop_third) {
+        } else if (bestIso.stop_sixth > minIso.stop_sixth) {
           specificSuggestions.push(`⏱️ Durée : ${result.totalDuration.toFixed(2)}s ${settings.durationLimit < 100 ? `(limite : ${settings.durationLimit}s)` : ''}`);
           if (result.durationWarning) {
             specificSuggestions.push(`⚠️ Limite astrophoto dépassée (désactiver)`);
@@ -497,8 +510,8 @@ const HDRCalculator = () => {
 
   // Calcul Correction #2 (Ouverture)
   const calculateCorrection2 = () => {
-    const apertureShift = photoDatabase.aperture_values.values[correction2Aperture].stop_third - 
-                          photoDatabase.aperture_values.values[mainValues.aperture].stop_third;
+    const apertureShift = photoDatabase.aperture_values.values[correction2Aperture].stop_sixth - 
+                          photoDatabase.aperture_values.values[mainValues.aperture].stop_sixth;
     
     const adjustedShutterIndex = mainValues.shutter - apertureShift;
     
@@ -521,13 +534,13 @@ const HDRCalculator = () => {
       
       if (result.speedErrors.max) {
         specificSuggestions.push(`→ Vitesse trop rapide : fermez le diaphragme (augmentez f/)`);
-        if (currentAperture.stop_third >= maxAperture.stop_third) {
+        if (currentAperture.stop_sixth >= maxAperture.stop_sixth) {
           specificSuggestions.push(`🎯 Objectif au maximum (${maxAperture.display}) → Filtres ND`);
         }
       }
       if (result.speedErrors.min) {
         specificSuggestions.push(`→ Vitesse trop lente : ouvrez le diaphragme (diminuez f/)`);
-        if (currentAperture.stop_third <= minAperture.stop_third) {
+        if (currentAperture.stop_sixth <= minAperture.stop_sixth) {
           specificSuggestions.push(`🎯 Objectif au maximum (${minAperture.display}) → Objectif plus lumineux (f/1.4, f/1.8)`);
         }
       }
@@ -550,7 +563,7 @@ const HDRCalculator = () => {
         const testAperture = filteredApertures[i];
         if (testAperture.numeric >= 5.6 && testAperture.numeric <= 8) {
           const testApertureIndex = photoDatabase.aperture_values.values.indexOf(testAperture);
-          const testApertureShift = testAperture.stop_third - photoDatabase.aperture_values.values[mainValues.aperture].stop_third;
+          const testApertureShift = testAperture.stop_sixth - photoDatabase.aperture_values.values[mainValues.aperture].stop_sixth;
           const testShutterIndex = mainValues.shutter - testApertureShift;
           
           const testResult = calculateHDRSequence(
@@ -621,7 +634,7 @@ const HDRCalculator = () => {
     
     return allIsos.filter(iso => {
       const isoIndex = photoDatabase.iso_values.values.indexOf(iso);
-      const isoShift = iso.stop_third - photoDatabase.iso_values.values[mainValues.iso].stop_third;
+      const isoShift = iso.stop_sixth - photoDatabase.iso_values.values[mainValues.iso].stop_sixth;
       const adjustedShutterIndex = mainValues.shutter + isoShift;
       
       const testResult = calculateHDRSequence(
@@ -648,7 +661,7 @@ const HDRCalculator = () => {
     
     return allApertures.filter(aperture => {
       const apertureIndex = photoDatabase.aperture_values.values.indexOf(aperture);
-      const apertureShift = aperture.stop_third - photoDatabase.aperture_values.values[mainValues.aperture].stop_third;
+      const apertureShift = aperture.stop_sixth - photoDatabase.aperture_values.values[mainValues.aperture].stop_sixth;
       const adjustedShutterIndex = mainValues.shutter - apertureShift;
       
       const testResult = calculateHDRSequence(
