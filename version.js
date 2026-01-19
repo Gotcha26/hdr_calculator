@@ -1,75 +1,23 @@
-// version.js - Récupération automatique des infos Git depuis GitHub
+// version.js - Informations de version (fichier statique)
+// Ce fichier est généré par le script de déploiement
 
 const versionInfo = {
   major: 1,
   minor: 0,
-  repoOwner: "Gotcha26",
-  repoName: "hdr_calculator",
-  branch: "dev", // ou "main"
+  branch: "dev",
+  hash: "abc1234",
+  date: "260119",
+  datetime: "260119 - 143055",
   
-  // Cache pour éviter trop de requêtes
-  cachedInfo: null,
-  
-  // Récupérer les infos depuis GitHub API
-  async fetchGitInfo() {
-    if (this.cachedInfo) {
-      return this.cachedInfo;
-    }
-    
-    try {
-      const response = await fetch(
-        `https://api.github.com/repos/${this.repoOwner}/${this.repoName}/commits/${this.branch}`
-      );
-      
-      if (!response.ok) throw new Error('GitHub API error');
-      
-      const data = await response.json();
-      const commitDate = new Date(data.commit.committer.date);
-      const shortHash = data.sha.substring(0, 7);
-      
-      // Format date AAMMJJ
-      const dateStr = commitDate.toLocaleDateString('fr-FR', {
-        year: '2-digit',
-        month: '2-digit', 
-        day: '2-digit'
-      }).replace(/\//g, '');
-      
-      this.cachedInfo = {
-        hash: shortHash,
-        date: dateStr,
-        fullDate: commitDate
-      };
-      
-      return this.cachedInfo;
-    } catch (error) {
-      console.warn('Impossible de récupérer les infos Git:', error);
-      // Valeurs par défaut si échec
-      return {
-        hash: 'local',
-        date: new Date().toLocaleDateString('fr-FR', {
-          year: '2-digit',
-          month: '2-digit',
-          day: '2-digit'
-        }).replace(/\//g, '')
-      };
-    }
+  getFullVersion: function() {
+    return `${this.major}.${this.minor} ${this.branch} ${this.date}`;
   },
   
-  // Format pour le menu
-  async getFullVersion() {
-    const info = await this.fetchGitInfo();
-    return `${this.major}.${this.minor} ${this.branch} ${info.date}`;
+  getShortVersion: function() {
+    return `v${this.major}.${this.minor} ${this.branch} ${this.hash}`;
   },
   
-  // Format avec hash
-  async getVersionWithHash() {
-    const info = await this.fetchGitInfo();
-    return `${this.major}.${this.minor} ${this.branch} ${info.hash}`;
-  },
-  
-  // Format court pour footer
-  async getShortVersion() {
-    const info = await this.fetchGitInfo();
-    return `v${this.major}.${this.minor} ${this.branch} ${info.date}`;
+  getDateTime: function() {
+    return this.datetime;
   }
 };

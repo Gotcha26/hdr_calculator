@@ -1,13 +1,9 @@
 // components/Menu.jsx - Menu latéral de navigation
 
 const Menu = ({ menuOpen, setMenuOpen, currentPage, setCurrentPage }) => {
-  const [version, setVersion] = React.useState('v1.0 dev');
-  
-  React.useEffect(() => {
-    if (typeof versionInfo !== 'undefined') {
-      versionInfo.getFullVersion().then(v => setVersion(v));
-    }
-  }, []);
+  const version = typeof versionInfo !== 'undefined'
+    ? versionInfo.getFullVersion()
+    : '1.0 dev unknown';
   
   return (
     <>

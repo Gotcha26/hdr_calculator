@@ -1,13 +1,13 @@
 // components/Footer.jsx - Pied de page de l'application
 
 const Footer = () => {
-  const [version, setVersion] = React.useState('v1.0 dev');
+  const version = typeof versionInfo !== 'undefined' 
+    ? versionInfo.getShortVersion() 
+    : 'v1.0 dev unknown';
   
-  React.useEffect(() => {
-    if (typeof versionInfo !== 'undefined') {
-      versionInfo.getShortVersion().then(v => setVersion(v));
-    }
-  }, []);
+  const datetime = typeof versionInfo !== 'undefined'
+    ? versionInfo.getDateTime()
+    : 'Date inconnue';
   
   return (
     <footer style={appStyles.footer}>
@@ -39,7 +39,9 @@ const Footer = () => {
             <h3 style={appStyles.footerTitle}>Informations</h3>
             <p style={appStyles.footerText}>
               Créé avec ❤️ pour les photographes<br/>
-              {version} • 2026
+              <span title={datetime} style={{cursor: 'help', borderBottom: '1px dotted #94a3b8'}}>
+                {version}
+              </span>
             </p>
           </div>
         </div>
