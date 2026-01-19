@@ -1,6 +1,33 @@
 const { useState } = React;
 
 const HDRCalculator = () => {
+  // 🧪 TEST DE VALIDATION - À SUPPRIMER APRÈS
+  React.useEffect(() => {
+    console.log('=== TESTS DE CHARGEMENT DE FONCTIONS EXTERNES ===');
+    
+    // Test 1 : Fonction simple
+    const test1 = calculateTestSum(5, 3);
+    console.log('Test 1 (fonction simple):', test1.message);
+    
+    // Test 2 : Accès photoDatabase
+    const test2 = getFirstIsoValue();
+    if (test2.success) {
+      console.log('Test 2 (photoDatabase):', test2.message);
+    } else {
+      console.error('Test 2 ÉCHEC:', test2.error);
+    }
+    
+    // Test 3 : Accès cameraTypes
+    const test3 = getFirstCameraType();
+    if (test3.success) {
+      console.log('Test 3 (cameraTypes):', test3.message);
+    } else {
+      console.error('Test 3 ÉCHEC:', test3.error);
+    }
+    
+    console.log('=== FIN DES TESTS ===');
+  }, []); // Execute une seule fois au montage
+  
   // États de navigation
   const [currentPage, setCurrentPage] = useState('calculator');
   const [menuOpen, setMenuOpen] = useState(false);
