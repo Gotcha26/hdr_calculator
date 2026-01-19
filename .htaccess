@@ -3,10 +3,5 @@
     Require all denied
 </FilesMatch>
 
-# Autoriser le webhook PHP
-<Files "deploy.php">
-    Require all granted
-</Files>
-
 # Interdire l’indexation
 Options -Indexes
