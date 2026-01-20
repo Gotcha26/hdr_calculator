@@ -13,9 +13,9 @@ const Header = ({ setMenuOpen }) => {
         
         <div style={{flex: 1}}>
           <h1 style={appStyles.headerTitle}>
-            HDR Calculator
+            {t("HDR Calculator")}
           </h1>
-          <p style={appStyles.headerSubtitle}>Calculateur de séquences HDR</p>
+          <p style={appStyles.headerSubtitle}>{t("Calculateur de séquences HDR")}</p>
         </div>
       </div>
     </div>

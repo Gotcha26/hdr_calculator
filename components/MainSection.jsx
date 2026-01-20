@@ -16,7 +16,7 @@ const MainSection = ({
   return (
     <div style={appStyles.section}>
       <h2 style={{...appStyles.sectionTitle, color: appStyles.titleMain}}>
-        📷 Vue centrée
+        📷 {t("Vue centrée")}
       </h2>
 
       <div style={{
@@ -26,7 +26,7 @@ const MainSection = ({
         marginBottom: '24px'
       }}>
         <div>
-          <label style={appStyles.formLabel}>Ouverture</label>
+          <label style={appStyles.formLabel}>{t("Ouverture")}</label>
           <select 
             value={mainValues.aperture} 
             onChange={(e) => setMainValues({...mainValues, aperture: parseInt(e.target.value)})} 
@@ -38,7 +38,7 @@ const MainSection = ({
               settings.apertureMin, 
               settings.apertureMax
             ).map((aperture) => (
-              <option key={aperture.stop_third} value={photoDatabase.aperture_values.values.indexOf(aperture)}>
+              <option key={aperture.stop_sixth} value={photoDatabase.aperture_values.values.indexOf(aperture)}>
                 {aperture.display}
               </option>
             ))}
@@ -46,7 +46,7 @@ const MainSection = ({
         </div>
 
         <div>
-          <label style={appStyles.formLabel}>Vitesse</label>
+          <label style={appStyles.formLabel}>{t("Vitesse")}</label>
           <select 
             value={mainValues.shutter} 
             onChange={(e) => setMainValues({...mainValues, shutter: parseInt(e.target.value)})} 
@@ -58,7 +58,7 @@ const MainSection = ({
               settings.speedMin, 
               settings.speedMax
             ).map((speed) => (
-              <option key={speed.stop_third} value={photoDatabase.shutter_speeds.values.indexOf(speed)}>
+              <option key={speed.stop_sixth} value={photoDatabase.shutter_speeds.values.indexOf(speed)}>
                 {speed.display}
               </option>
             ))}
@@ -66,7 +66,7 @@ const MainSection = ({
         </div>
 
         <div>
-          <label style={appStyles.formLabel}>ISO</label>
+          <label style={appStyles.formLabel}>{t("ISO")}</label>
           <select 
             value={mainValues.iso} 
             onChange={(e) => setMainValues({...mainValues, iso: parseInt(e.target.value)})} 
@@ -78,7 +78,7 @@ const MainSection = ({
               settings.isoMin, 
               settings.isoMax
             ).map((iso) => (
-              <option key={iso.stop_third} value={photoDatabase.iso_values.values.indexOf(iso)}>
+              <option key={iso.stop_sixth} value={photoDatabase.iso_values.values.indexOf(iso)}>
                 {iso.display}
               </option>
             ))}
@@ -86,20 +86,20 @@ const MainSection = ({
         </div>
 
         <div>
-          <label style={appStyles.formLabel}>Brackets</label>
+          <label style={appStyles.formLabel}>{t("Brackets")}</label>
           <select 
             value={mainValues.brackets} 
             onChange={(e) => setMainValues({...mainValues, brackets: parseInt(e.target.value)})} 
             style={appStyles.select}
           >
             {[3, 5, 7, 9].map(n => (
-              <option key={n} value={n}>{n} images</option>
+              <option key={n} value={n}>{n} {t("images")}</option>
             ))}
           </select>
         </div>
 
         <div>
-          <label style={appStyles.formLabel}>Espacement</label>
+          <label style={appStyles.formLabel}>{t("Espacement")}</label>
           <select 
             value={mainValues.spacing} 
             onChange={(e) => setMainValues({...mainValues, spacing: parseFloat(e.target.value)})} 
@@ -119,21 +119,21 @@ const MainSection = ({
       )}>
         <div style={appStyles.resultGrid}>
           <div>
-            <p style={appStyles.resultLabel}>Plage dynamique</p>
+            <p style={appStyles.resultLabel}>{t("Plage dynamique")}</p>
             <p style={appStyles.resultValue}>
               {((mainValues.brackets - 1) * mainValues.spacing).toFixed(2)} EV
             </p>
           </div>
           <div>
-            <p style={appStyles.resultLabel}>Durée totale</p>
+            <p style={appStyles.resultLabel}>{t("Durée totale")}</p>
             <p style={appStyles.resultValue}>{mainResult.totalDuration.toFixed(2)}s</p>
           </div>
           <div>
-            <p style={appStyles.resultLabel}>Pose longue</p>
+            <p style={appStyles.resultLabel}>{t("Pose longue")}</p>
             <p style={appStyles.resultValue}>{mainResult.sequence[0].shutter.display}</p>
           </div>
           <div>
-            <p style={appStyles.resultLabel}>Pose rapide</p>
+            <p style={appStyles.resultLabel}>{t("Pose rapide")}</p>
             <p style={appStyles.resultValue}>
               {mainResult.sequence[mainResult.sequence.length - 1].shutter.display}
             </p>
@@ -145,21 +145,21 @@ const MainSection = ({
             mainResult.durationWarning ? (
               <div>
                 <p style={appStyles.statusWarning}>
-                  ⚠️ COMPLIQUÉ (Durée astrophoto dépassée)
+                  ⚠️ {t("COMPLIQUÉ")} ({t("Durée astrophoto dépassée")})
                 </p>
                 <p style={{fontSize: '0.75rem', color: '#fed7aa', marginBottom: '12px'}}>
-                  Durée {mainResult.totalDuration.toFixed(2)}s dépasse {settings.durationLimit}s → Risque de filé d'étoiles
+                  {t("Durée")} {mainResult.totalDuration.toFixed(2)}s {t("dépasse")} {settings.durationLimit}s → {t("Risque de filé d'étoiles")}
                 </p>
                 <button 
                   onClick={() => setSettings({...settings, durationLimit: 999})} 
                   style={appStyles.warningButton}
                 >
-                  🚀 Désactiver limite astrophoto
+                  🚀 {t("Désactiver limite astrophoto")}
                 </button>
               </div>
             ) : (
               <div>
-                <p style={appStyles.statusSuccess}>✅ SÉQUENCE RÉALISABLE</p>
+                <p style={appStyles.statusSuccess}>✅ {t("SÉQUENCE RÉALISABLE")}</p>
                 {mainResult.suggestions.length > 0 && (
                   <ul style={appStyles.suggestionList}>
                     {mainResult.suggestions.map((sug, i) => (
@@ -171,7 +171,7 @@ const MainSection = ({
             )
           ) : (
             <div>
-              <p style={appStyles.statusError}>❌ IMPOSSIBLE</p>
+              <p style={appStyles.statusError}>❌ {t("IMPOSSIBLE")}</p>
               <ul style={appStyles.errorList}>
                 {mainResult.errors.map((err, i) => (
                   <li key={i}>{err}</li>

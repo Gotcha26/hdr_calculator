@@ -1,0 +1,245 @@
+/* theme.css - Variables CSS pour le theming de l'application */
+
+:root {
+  /* ============================================================================
+     COULEURS PRINCIPALES
+     ============================================================================ */
+  
+  /* Couleurs de marque */
+  --color-primary: #3b82f6;           /* Bleu principal (boutons, liens) */
+  --color-primary-hover: #2563eb;     /* Bleu au survol */
+  --color-secondary: #22d3ee;         /* Cyan (accents, titres) */
+  --color-secondary-dark: #06b6d4;    /* Cyan foncé */
+  
+  /* Couleurs de statut */
+  --color-success: #22c55e;           /* Vert (succès, réalisable) */
+  --color-success-light: #86efac;     /* Vert clair (suggestions) */
+  --color-success-bg: rgba(34, 197, 94, 0.1);
+  --color-success-border: rgba(34, 197, 94, 0.3);
+  
+  --color-warning: #fb923c;           /* Orange (attention, warning) */
+  --color-warning-light: #fed7aa;     /* Orange clair */
+  --color-warning-bg: rgba(251, 146, 60, 0.1);
+  --color-warning-border: rgba(251, 146, 60, 0.3);
+  
+  --color-error: #ef4444;             /* Rouge (erreur, impossible) */
+  --color-error-light: #fca5a5;       /* Rouge clair */
+  --color-error-bg: rgba(239, 68, 68, 0.1);
+  --color-error-border: rgba(239, 68, 68, 0.3);
+  
+  /* Couleurs des sections */
+  --color-section-main: #22d3ee;      /* Cyan - Vue centrée */
+  --color-section-iso: #fbbf24;       /* Jaune/Or - Correction ISO */
+  --color-section-iso-border: rgba(251, 191, 36, 0.3);
+  --color-section-aperture: #a855f7;  /* Violet - Correction Ouverture */
+  --color-section-aperture-border: rgba(168, 85, 247, 0.3);
+  --color-section-range: #8b5cf6;     /* Violet clair - Plage entière */
+  --color-section-range-border: rgba(139, 92, 246, 0.3);
+  --color-section-settings: #22d3ee;  /* Cyan - Paramètres */
+  
+  /* ============================================================================
+     COULEURS DE FOND
+     ============================================================================ */
+  
+  /* Arrière-plans principaux */
+  --bg-gradient-start: #0f172a;       /* Bleu très foncé */
+  --bg-gradient-middle: #1e293b;      /* Bleu-gris foncé */
+  --bg-gradient-end: #0f172a;         /* Bleu très foncé */
+  
+  /* Arrière-plans des composants */
+  --bg-header: rgba(15, 23, 42, 0.5);
+  --bg-menu: linear-gradient(180deg, rgb(30, 41, 59), rgb(15, 23, 42));
+  --bg-section: rgba(51, 65, 85, 0.5);
+  --bg-input: rgb(30, 41, 59);
+  --bg-footer: rgba(15, 23, 42, 0.3);
+  --bg-overlay: rgba(0, 0, 0, 0.7);
+  
+  /* ============================================================================
+     COULEURS DE TEXTE
+     ============================================================================ */
+  
+  --text-primary: #ffffff;            /* Blanc - texte principal */
+  --text-secondary: #94a3b8;          /* Gris clair - texte secondaire */
+  --text-muted: #64748b;              /* Gris - texte discret */
+  --text-label: #cbd5e1;              /* Gris très clair - labels */
+  
+  /* ============================================================================
+     BORDURES
+     ============================================================================ */
+  
+  --border-default: rgb(71, 85, 105);
+  --border-light: rgba(148, 163, 184, 0.2);
+  --border-separator: #475569;
+  --border-menu-item: rgba(255, 255, 255, 0.1);
+  --border-footer: #334155;
+  
+  /* ============================================================================
+     EFFETS
+     ============================================================================ */
+  
+  --blur-standard: blur(12px);
+  --shadow-menu: 4px 0 12px rgba(0, 0, 0, 0.5);
+  
+  /* ============================================================================
+     ESPACEMENTS (pour référence, utilisés inline)
+     ============================================================================ */
+  
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-xxl: 48px;
+  
+  /* ============================================================================
+     TYPOGRAPHIE
+     ============================================================================ */
+  
+  --font-family: 'JetBrains Mono', monospace;
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  
+  /* ============================================================================
+     RAYONS DE BORDURE
+     ============================================================================ */
+  
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  
+  /* ============================================================================
+     TRANSITIONS
+     ============================================================================ */
+  
+  --transition-fast: 0.2s ease;
+  --transition-normal: 0.3s ease;
+}
+
+/* ============================================================================
+   CLASSES UTILITAIRES CSS
+   ============================================================================ */
+
+/* Conteneur principal avec gradient */
+.app-container {
+  min-height: 100vh;
+  background: linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-middle), var(--bg-gradient-end));
+  color: var(--text-primary);
+}
+
+/* Header */
+.app-header {
+  background: var(--bg-header);
+  backdrop-filter: var(--blur-standard);
+  border-bottom: 1px solid var(--border-separator);
+}
+
+/* Sections */
+.section-card {
+  background: var(--bg-section);
+  backdrop-filter: var(--blur-standard);
+  border: 1px solid var(--border-light);
+  border-radius: var(--radius-lg);
+}
+
+.section-card--iso {
+  border-color: var(--color-section-iso-border);
+}
+
+.section-card--aperture {
+  border-color: var(--color-section-aperture-border);
+}
+
+.section-card--range {
+  border-color: var(--color-section-range-border);
+}
+
+/* Inputs et selects */
+.form-input,
+.form-select {
+  background: var(--bg-input);
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+}
+
+.form-select--iso {
+  border-color: var(--color-section-iso);
+}
+
+.form-select--aperture {
+  border-color: var(--color-section-aperture);
+}
+
+/* Boutons */
+.btn-primary {
+  background: var(--color-primary);
+  color: var(--text-primary);
+  border: none;
+  border-radius: var(--radius-md);
+}
+
+.btn-primary:hover {
+  background: var(--color-primary-hover);
+}
+
+.btn-warning {
+  background: var(--color-warning-bg);
+  border: 1px solid var(--color-warning-border);
+  color: var(--text-primary);
+}
+
+/* Cartes de résultat */
+.result-card--success {
+  background: linear-gradient(135deg, var(--color-success-bg), rgba(34, 197, 94, 0.05));
+  border: 1px solid var(--color-success-border);
+}
+
+.result-card--warning {
+  background: linear-gradient(135deg, var(--color-warning-bg), rgba(251, 146, 60, 0.05));
+  border: 1px solid var(--color-warning-border);
+}
+
+.result-card--error {
+  background: linear-gradient(135deg, var(--color-error-bg), rgba(239, 68, 68, 0.05));
+  border: 1px solid var(--color-error-border);
+}
+
+/* Texte de statut */
+.status-success { color: var(--color-success); }
+.status-warning { color: var(--color-warning); }
+.status-error { color: var(--color-error); }
+
+/* Titres de section */
+.title-main { color: var(--color-section-main); }
+.title-iso { color: var(--color-section-iso); }
+.title-aperture { color: var(--color-section-aperture); }
+.title-range { color: var(--color-section-range); }
+.title-settings { color: var(--color-section-settings); }
+
+/* Lien cliquable */
+.clickable-link {
+  cursor: pointer;
+  text-decoration: underline;
+  color: var(--color-section-iso);
+}
+
+/* Footer */
+.app-footer {
+  background: var(--bg-footer);
+  border-top: 1px solid var(--border-separator);
+}
+
+/* ============================================================================
+   MEDIA QUERIES POUR LE RESPONSIVE
+   ============================================================================ */
+
+@media (max-width: 768px) {
+  :root {
+    --font-size-2xl: 1.25rem;
+    --spacing-lg: 16px;
+  }
+}

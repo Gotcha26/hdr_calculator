@@ -22,27 +22,27 @@ const CorrectionISO = ({
         onClick={() => setSection2Open(!section2Open)}
         style={{...appStyles.sectionTitle, color: appStyles.titleISO}}
       >
-        <span>🔶 Correction ISO</span>
+        <span>🔶 {t("Correction ISO")}</span>
         <span style={{fontSize: '1.25rem'}}>{section2Open ? '▼' : '▶'}</span>
       </h2>
 
       {section2Open && (
         <div>
           <div style={{marginBottom: '24px'}}>
-            <label style={appStyles.formLabel}>Nouveau ISO</label>
+            <label style={appStyles.formLabel}>{t("Nouveau ISO")}</label>
             <select 
               value={correction1Iso} 
               onChange={(e) => setCorrection1Iso(parseInt(e.target.value))} 
               style={appStyles.selectISO}
             >
               {getValidIsos().map((iso) => (
-                <option key={iso.stop_third} value={photoDatabase.iso_values.values.indexOf(iso)}>
+                <option key={iso.stop_sixth} value={photoDatabase.iso_values.values.indexOf(iso)}>
                   {iso.display}
                 </option>
               ))}
             </select>
             <p style={appStyles.helpText}>
-              Ouverture fixe : {photoDatabase.aperture_values.values[mainValues.aperture].display}
+              {t("Ouverture fixe")} : {photoDatabase.aperture_values.values[mainValues.aperture].display}
             </p>
           </div>
 
@@ -51,15 +51,15 @@ const CorrectionISO = ({
           )}>
             <div style={appStyles.resultGrid}>
               <div>
-                <p style={appStyles.resultLabel}>Pose longue</p>
+                <p style={appStyles.resultLabel}>{t("Pose longue")}</p>
                 <p style={appStyles.resultValue}>
-                  {correction1Result.sequence[0].shutter.display}
+                  {correction1Result.sequence[0]?.shutter?.display || '-'}
                 </p>
               </div>
               <div>
-                <p style={appStyles.resultLabel}>Pose rapide</p>
+                <p style={appStyles.resultLabel}>{t("Pose rapide")}</p>
                 <p style={appStyles.resultValue}>
-                  {correction1Result.sequence[correction1Result.sequence.length - 1].shutter.display}
+                  {correction1Result.sequence[correction1Result.sequence.length - 1]?.shutter?.display || '-'}
                 </p>
               </div>
             </div>
@@ -67,7 +67,7 @@ const CorrectionISO = ({
             <div>
               {correction1Result.errors.length === 0 ? (
                 <div>
-                  <p style={appStyles.statusSuccess}>✅ SÉQUENCE RÉALISABLE</p>
+                  <p style={appStyles.statusSuccess}>✅ {t("SÉQUENCE RÉALISABLE")}</p>
                   {correction1Result.suggestions.length > 0 && (
                     <ul style={appStyles.suggestionList}>
                       {correction1Result.suggestions.map((sug, i) => renderSuggestion(sug, i, setSettings, settings))}
@@ -76,7 +76,7 @@ const CorrectionISO = ({
                 </div>
               ) : (
                 <div>
-                  <p style={appStyles.statusError}>❌ IMPOSSIBLE</p>
+                  <p style={appStyles.statusError}>❌ {t("IMPOSSIBLE")}</p>
                   <ul style={appStyles.errorList}>
                     {correction1Result.errors.map((err, i) => (
                       <li key={i}>{err}</li>

@@ -4,13 +4,21 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HDR Calculator</title>
+  
+  <!-- React -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Unbounded:wght@700&display=swap" rel="stylesheet">
+  
+  <!-- Polices -->
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- CSS Theme (variables) -->
+  <link rel="stylesheet" href="theme.css">
+  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'JetBrains Mono', monospace; }
+    body { font-family: var(--font-family, 'JetBrains Mono', monospace); }
   </style>
 </head>
 <body>
@@ -22,18 +30,23 @@
   <!-- 2. Base de données -->
   <script src="data/photoDatabase.js"></script>
   
-  <!-- 3. Utilitaires -->
+  <!-- 3. Internationalisation -->
+  <script src="i18n/fr.js"></script>
+  <script src="i18n/en.js"></script>
+  <script src="i18n/index.js"></script>
+  
+  <!-- 4. Utilitaires -->
   <script src="utils/utils.js"></script>
   <script src="utils/calculationEngine.js"></script>
   <script src="utils/validationEngine.js"></script>
   
-  <!-- 4. Styles (variable globale appStyles) -->
+  <!-- 5. Styles (variable globale appStyles) -->
   <script src="styles.js"></script>
   
-  <!-- 5. Helpers (fonction globale renderSuggestion) -->
+  <!-- 6. Helpers (fonction globale renderSuggestion) -->
   <script type="text/babel" src="utils/helpers.js"></script>
   
-  <!-- 6. Composants (variables globales) -->
+  <!-- 7. Composants (variables globales) -->
   <script type="text/babel" src="components/Header.jsx"></script>
   <script type="text/babel" src="components/Menu.jsx"></script>
   <script type="text/babel" src="components/Footer.jsx"></script>
@@ -43,7 +56,7 @@
   <script type="text/babel" src="components/RangePleine.jsx"></script>
   <script type="text/babel" src="components/SettingsPage.jsx"></script>
   
-  <!-- 7. Application principale -->
+  <!-- 8. Application principale -->
   <script type="text/babel" src="App.jsx"></script>
 </body>
 </html>

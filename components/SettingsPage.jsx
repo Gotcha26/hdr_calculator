@@ -9,10 +9,22 @@ const SettingsPage = ({
   photoDatabase,
   cameraTypes 
 }) => {
+  const [generalOpen, setGeneralOpen] = React.useState(true);
   const [techOpen, setTechOpen] = React.useState(true);
   const [artisticOpen, setArtisticOpen] = React.useState(false);
   const [boitierOpen, setBoitierOpen] = React.useState(true);
   const [objectifOpen, setObjectifOpen] = React.useState(true);
+  
+  // Langue actuelle
+  const [currentLang, setCurrentLang] = React.useState(i18n.getLanguage());
+  
+  // Changer de langue
+  const handleLanguageChange = (lang) => {
+    if (window.changeLanguage) {
+      window.changeLanguage(lang);
+      setCurrentLang(lang);
+    }
+  };
   
   // Filtrer les ouvertures pour les paramètres artistiques (selon limites techniques)
   const getArtisticApertureOptions = () => {
@@ -31,8 +43,46 @@ const SettingsPage = ({
   return (
     <div style={{maxWidth: '1280px', margin: '0 auto'}}>
       <h2 style={{fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '12px'}}>
-        <span>⚙️</span> Configuration matériel
+        <span>⚙️</span> {t("Configuration matériel")}
       </h2>
+      
+      {/* SECTION GÉNÉRAL - LANGUE */}
+      <div style={{
+        ...appStyles.section,
+        marginBottom: '24px'
+      }}>
+        <h3 
+          onClick={() => setGeneralOpen(!generalOpen)}
+          style={{
+            ...appStyles.sectionTitle,
+            color: appStyles.titleSettings,
+            marginBottom: generalOpen ? '24px' : '0'
+          }}
+        >
+          <span>🌐 {t("Général")}</span>
+          <span style={{fontSize: '1.25rem'}}>{generalOpen ? '▼' : '▶'}</span>
+        </h3>
+        
+        {generalOpen && (
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px'}}>
+            <div>
+              <label style={appStyles.formLabel}>{t("Langue")}</label>
+              <select 
+                value={currentLang} 
+                onChange={(e) => handleLanguageChange(e.target.value)} 
+                style={appStyles.select}
+              >
+                {i18n.getAvailableLanguages().map((lang) => (
+                  <option key={lang.code} value={lang.code}>{lang.name}</option>
+                ))}
+              </select>
+              <p style={{...appStyles.helpText, fontStyle: 'italic'}}>
+                {t("Langue de l'interface")}
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
       
       {/* SECTION TECHNIQUE - ACCORDION */}
       <div style={{
@@ -371,7 +421,7 @@ const SettingsPage = ({
         onClick={() => setCurrentPage('calculator')} 
         style={appStyles.primaryButton}
       >
-        ← Retour au calcul
+        ← {t("Retour au calcul")}
       </button>
     </div>
   );

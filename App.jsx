@@ -1,9 +1,22 @@
-const { useState } = React;
+const { useState, useEffect } = React;
 
 const HDRCalculator = () => {
   // ============================================================================
   // ÉTATS
   // ============================================================================
+  
+  // État de la langue (pour forcer le re-render lors du changement)
+  const [currentLang, setCurrentLang] = useState(i18n.getLanguage());
+  
+  // Fonction pour changer de langue (accessible globalement)
+  const changeLanguage = (lang) => {
+    if (i18n.setLanguage(lang)) {
+      setCurrentLang(lang); // Force le re-render de tous les composants
+    }
+  };
+  
+  // Exposer la fonction globalement pour les composants enfants
+  window.changeLanguage = changeLanguage;
   
   // États de navigation
   const [currentPage, setCurrentPage] = useState('calculator');

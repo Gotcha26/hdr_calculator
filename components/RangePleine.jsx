@@ -50,7 +50,7 @@ const RangePleine = ({
                   settings.apertureMin, 
                   settings.apertureMax
                 ).map((aperture) => (
-                  <option key={aperture.stop_third} value={photoDatabase.aperture_values.values.indexOf(aperture)}>
+                  <option key={aperture.stop_sixth} value={photoDatabase.aperture_values.values.indexOf(aperture)}>
                     {aperture.display}
                   </option>
                 ))}
@@ -73,7 +73,7 @@ const RangePleine = ({
                   settings.isoMin, 
                   settings.isoMax
                 ).map((iso) => (
-                  <option key={iso.stop_third} value={photoDatabase.iso_values.values.indexOf(iso)}>
+                  <option key={iso.stop_sixth} value={photoDatabase.iso_values.values.indexOf(iso)}>
                     {iso.display}
                   </option>
                 ))}
@@ -96,7 +96,7 @@ const RangePleine = ({
                   settings.speedMin, 
                   settings.speedMax
                 ).map((speed) => (
-                  <option key={speed.stop_third} value={photoDatabase.shutter_speeds.values.indexOf(speed)}>
+                  <option key={speed.stop_sixth} value={photoDatabase.shutter_speeds.values.indexOf(speed)}>
                     {speed.display}
                   </option>
                 ))}
@@ -120,7 +120,7 @@ const RangePleine = ({
                   settings.speedMin, 
                   settings.speedMax
                 ).map((speed) => (
-                  <option key={speed.stop_third} value={photoDatabase.shutter_speeds.values.indexOf(speed)}>
+                  <option key={speed.stop_sixth} value={photoDatabase.shutter_speeds.values.indexOf(speed)}>
                     {speed.display}
                   </option>
                 ))}

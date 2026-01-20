@@ -1,18 +1,19 @@
-// styles.js - Styles centralisés de l'application (variable globale pour Babel standalone)
+// styles.js - Styles centralisés utilisant les variables CSS
+// Les valeurs font référence aux variables définies dans theme.css
 
 const appStyles = {
   // Conteneur principal
   container: {
     minHeight: '100vh',
-    background: 'linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a)',
-    color: 'white'
+    background: 'linear-gradient(to bottom right, var(--bg-gradient-start), var(--bg-gradient-middle), var(--bg-gradient-end))',
+    color: 'var(--text-primary)'
   },
 
   // Header
   header: {
-    background: 'rgba(15, 23, 42, 0.5)',
-    backdropFilter: 'blur(12px)',
-    borderBottom: '1px solid #475569',
+    background: 'var(--bg-header)',
+    backdropFilter: 'var(--blur-standard)',
+    borderBottom: '1px solid var(--border-separator)',
     position: 'sticky',
     top: 0,
     zIndex: 50
@@ -20,29 +21,29 @@ const appStyles = {
   headerContainer: {
     maxWidth: '1280px',
     margin: '0 auto',
-    padding: '16px',
+    padding: 'var(--spacing-md)',
     display: 'flex',
     alignItems: 'center',
-    gap: '16px'
+    gap: 'var(--spacing-md)'
   },
   headerButton: {
-    padding: '8px',
+    padding: 'var(--spacing-sm)',
     background: 'transparent',
     border: 'none',
-    color: 'white',
+    color: 'var(--text-primary)',
     cursor: 'pointer',
-    fontSize: '1.5rem'
+    fontSize: 'var(--font-size-2xl)'
   },
   headerTitle: {
-    fontSize: '1.5rem',
+    fontSize: 'var(--font-size-2xl)',
     fontWeight: 'bold',
-    background: 'linear-gradient(to right, #60a5fa, #22d3ee)',
+    background: 'linear-gradient(to right, #60a5fa, var(--color-secondary))',
     WebkitBackgroundClip: 'text',
     WebkitTextFillColor: 'transparent'
   },
   headerSubtitle: {
-    fontSize: '0.75rem',
-    color: '#94a3b8'
+    fontSize: 'var(--font-size-xs)',
+    color: 'var(--text-secondary)'
   },
 
   // Menu
@@ -52,7 +53,7 @@ const appStyles = {
     left: 0,
     right: 0,
     bottom: 0,
-    background: 'rgba(0, 0, 0, 0.7)',
+    background: 'var(--bg-overlay)',
     zIndex: 998
   },
   menuSidebar: {
@@ -62,40 +63,40 @@ const appStyles = {
     bottom: 0,
     width: '85%',
     maxWidth: '320px',
-    background: 'linear-gradient(180deg, rgb(30, 41, 59), rgb(15, 23, 42))',
+    background: 'var(--bg-menu)',
     zIndex: 999,
-    transition: 'transform 0.3s ease',
+    transition: 'transform var(--transition-normal)',
     overflowY: 'auto',
-    boxShadow: '4px 0 12px rgba(0,0,0,0.5)'
+    boxShadow: 'var(--shadow-menu)'
   },
   menuHeader: {
-    padding: '24px',
-    borderBottom: '1px solid #475569'
+    padding: 'var(--spacing-lg)',
+    borderBottom: '1px solid var(--border-separator)'
   },
   menuItem: {
-    padding: '16px 24px',
+    padding: 'var(--spacing-md) var(--spacing-lg)',
     display: 'flex',
     alignItems: 'center',
-    gap: '12px',
-    color: 'white',
-    borderBottom: '1px solid rgba(255,255,255,0.1)',
+    gap: 'var(--spacing-md)',
+    color: 'var(--text-primary)',
+    borderBottom: '1px solid var(--border-menu-item)',
     cursor: 'pointer',
-    transition: 'all 0.2s ease'
+    transition: 'all var(--transition-fast)'
   },
 
   // Sections
   section: {
-    background: 'rgba(51, 65, 85, 0.5)',
-    backdropFilter: 'blur(12px)',
-    padding: '24px',
-    borderRadius: '12px',
-    border: '1px solid rgba(148, 163, 184, 0.2)',
-    marginBottom: '24px'
+    background: 'var(--bg-section)',
+    backdropFilter: 'var(--blur-standard)',
+    padding: 'var(--spacing-lg)',
+    borderRadius: 'var(--radius-lg)',
+    border: '1px solid var(--border-light)',
+    marginBottom: 'var(--spacing-lg)'
   },
   sectionTitle: {
-    fontSize: '1.5rem',
+    fontSize: 'var(--font-size-2xl)',
     fontWeight: 'bold',
-    marginBottom: '24px',
+    marginBottom: 'var(--spacing-lg)',
     cursor: 'pointer',
     display: 'flex',
     alignItems: 'center',
@@ -105,31 +106,31 @@ const appStyles = {
 
   // Cards de résultats
   resultCard: (status) => ({
-    padding: '16px',
-    borderRadius: '8px',
+    padding: 'var(--spacing-md)',
+    borderRadius: 'var(--radius-md)',
     background: status === 'error' 
-      ? 'linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(239, 68, 68, 0.05))'
+      ? 'linear-gradient(135deg, var(--color-error-bg), rgba(239, 68, 68, 0.05))'
       : status === 'warning'
-      ? 'linear-gradient(135deg, rgba(251, 146, 60, 0.1), rgba(251, 146, 60, 0.05))'
-      : 'linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(34, 197, 94, 0.05))',
+      ? 'linear-gradient(135deg, var(--color-warning-bg), rgba(251, 146, 60, 0.05))'
+      : 'linear-gradient(135deg, var(--color-success-bg), rgba(34, 197, 94, 0.05))',
     border: status === 'error'
-      ? '1px solid rgba(239, 68, 68, 0.3)'
+      ? '1px solid var(--color-error-border)'
       : status === 'warning'
-      ? '1px solid rgba(251, 146, 60, 0.3)'
-      : '1px solid rgba(34, 197, 94, 0.3)'
+      ? '1px solid var(--color-warning-border)'
+      : '1px solid var(--color-success-border)'
   }),
   resultGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(2, 1fr)',
-    gap: '16px',
-    marginBottom: '16px'
+    gap: 'var(--spacing-md)',
+    marginBottom: 'var(--spacing-md)'
   },
   resultLabel: {
-    fontSize: '0.75rem',
-    color: '#94a3b8'
+    fontSize: 'var(--font-size-xs)',
+    color: 'var(--text-secondary)'
   },
   resultValue: {
-    fontSize: '1.125rem',
+    fontSize: 'var(--font-size-lg)',
     fontWeight: 'bold'
   },
 
@@ -137,150 +138,150 @@ const appStyles = {
   formGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-    gap: '16px',
-    marginBottom: '24px'
+    gap: 'var(--spacing-md)',
+    marginBottom: 'var(--spacing-lg)'
   },
   formLabel: {
     display: 'block',
-    fontSize: '0.875rem',
+    fontSize: 'var(--font-size-sm)',
     fontWeight: '600',
-    marginBottom: '8px'
+    marginBottom: 'var(--spacing-sm)'
   },
   select: {
     width: '100%',
-    padding: '12px',
-    background: 'rgb(30, 41, 59)',
-    border: '1px solid rgb(71, 85, 105)',
-    borderRadius: '8px',
-    color: 'white',
-    fontSize: '16px'
+    padding: 'var(--spacing-md)',
+    background: 'var(--bg-input)',
+    border: '1px solid var(--border-default)',
+    borderRadius: 'var(--radius-md)',
+    color: 'var(--text-primary)',
+    fontSize: 'var(--font-size-base)'
   },
   input: {
     flex: 1,
     textAlign: 'center',
-    padding: '12px',
-    background: 'rgb(30, 41, 59)',
-    border: '1px solid rgb(71, 85, 105)',
-    borderRadius: '8px',
-    color: 'white',
-    fontSize: '16px'
+    padding: 'var(--spacing-md)',
+    background: 'var(--bg-input)',
+    border: '1px solid var(--border-default)',
+    borderRadius: 'var(--radius-md)',
+    color: 'var(--text-primary)',
+    fontSize: 'var(--font-size-base)'
   },
   helpText: {
-    fontSize: '0.75rem',
-    color: '#94a3b8',
-    marginTop: '8px'
+    fontSize: 'var(--font-size-xs)',
+    color: 'var(--text-secondary)',
+    marginTop: 'var(--spacing-sm)'
   },
   smallHelpText: {
-    fontSize: '0.75rem',
-    color: '#64748b',
-    marginTop: '4px'
+    fontSize: 'var(--font-size-xs)',
+    color: 'var(--text-muted)',
+    marginTop: 'var(--spacing-xs)'
   },
 
   // Boutons
   button: {
-    padding: '8px 16px',
-    background: '#475569',
+    padding: 'var(--spacing-sm) var(--spacing-md)',
+    background: 'var(--border-separator)',
     border: 'none',
-    borderRadius: '6px',
-    color: 'white',
-    fontSize: '1.25rem',
+    borderRadius: 'var(--radius-sm)',
+    color: 'var(--text-primary)',
+    fontSize: 'var(--font-size-xl)',
     fontWeight: 'bold',
     cursor: 'pointer'
   },
   primaryButton: {
     width: '100%',
-    marginTop: '32px',
-    padding: '12px',
-    background: '#3b82f6',
+    marginTop: 'var(--spacing-xl)',
+    padding: 'var(--spacing-md)',
+    background: 'var(--color-primary)',
     border: 'none',
-    borderRadius: '8px',
-    color: 'white',
+    borderRadius: 'var(--radius-md)',
+    color: 'var(--text-primary)',
     fontWeight: '600',
     cursor: 'pointer',
-    fontSize: '16px'
+    fontSize: 'var(--font-size-base)'
   },
   warningButton: {
-    padding: '8px 16px',
-    fontSize: '0.75rem',
-    background: 'rgba(251, 146, 60, 0.2)',
-    border: '1px solid rgba(251, 146, 60, 0.3)',
-    borderRadius: '6px',
-    color: 'white',
+    padding: 'var(--spacing-sm) var(--spacing-md)',
+    fontSize: 'var(--font-size-xs)',
+    background: 'var(--color-warning-bg)',
+    border: '1px solid var(--color-warning-border)',
+    borderRadius: 'var(--radius-sm)',
+    color: 'var(--text-primary)',
     cursor: 'pointer'
   },
 
   // Messages de statut
   statusSuccess: {
     fontWeight: '600',
-    color: '#22c55e',
-    marginBottom: '8px'
+    color: 'var(--color-success)',
+    marginBottom: 'var(--spacing-sm)'
   },
   statusError: {
     fontWeight: '600',
-    color: '#ef4444',
-    marginBottom: '8px'
+    color: 'var(--color-error)',
+    marginBottom: 'var(--spacing-sm)'
   },
   statusWarning: {
     fontWeight: '600',
-    color: '#fb923c',
-    marginBottom: '8px'
+    color: 'var(--color-warning)',
+    marginBottom: 'var(--spacing-sm)'
   },
 
   // Listes
   suggestionList: {
-    fontSize: '0.75rem',
-    color: '#86efac',
+    fontSize: 'var(--font-size-xs)',
+    color: 'var(--color-success-light)',
     paddingLeft: '20px',
-    marginBottom: '12px'
+    marginBottom: 'var(--spacing-md)'
   },
   errorList: {
-    fontSize: '0.75rem',
-    color: '#fca5a5',
+    fontSize: 'var(--font-size-xs)',
+    color: 'var(--color-error-light)',
     paddingLeft: '20px'
   },
 
   // Footer
   footer: {
-    background: 'rgba(15, 23, 42, 0.3)',
-    borderTop: '1px solid #475569',
-    marginTop: '48px'
+    background: 'var(--bg-footer)',
+    borderTop: '1px solid var(--border-separator)',
+    marginTop: 'var(--spacing-xxl)'
   },
   footerContainer: {
     maxWidth: '1280px',
     margin: '0 auto',
-    padding: '32px 24px'
+    padding: 'var(--spacing-xl) var(--spacing-lg)'
   },
   footerGrid: {
     display: 'grid',
     gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-    gap: '24px',
-    fontSize: '0.875rem'
+    gap: 'var(--spacing-lg)',
+    fontSize: 'var(--font-size-sm)'
   },
   footerTitle: {
     fontWeight: 'bold',
-    color: '#22d3ee',
-    marginBottom: '8px'
+    color: 'var(--color-secondary)',
+    marginBottom: 'var(--spacing-sm)'
   },
   footerText: {
-    color: '#94a3b8',
-    fontSize: '0.75rem'
+    color: 'var(--text-secondary)',
+    fontSize: 'var(--font-size-xs)'
   },
   footerLink: {
-    color: '#94a3b8',
+    color: 'var(--text-secondary)',
     textDecoration: 'none'
   },
   footerCopyright: {
-    marginTop: '24px',
-    paddingTop: '24px',
-    borderTop: '1px solid #334155',
+    marginTop: 'var(--spacing-lg)',
+    paddingTop: 'var(--spacing-lg)',
+    borderTop: '1px solid var(--border-footer)',
     textAlign: 'center',
-    fontSize: '0.75rem',
-    color: '#64748b'
+    fontSize: 'var(--font-size-xs)',
+    color: 'var(--text-muted)'
   },
 
   // Content
   content: {
-    padding: '24px'
+    padding: 'var(--spacing-lg)'
   },
   contentContainer: {
     maxWidth: '1280px',
@@ -289,50 +290,50 @@ const appStyles = {
 
   // Sections spécifiques
   sectionISO: {
-    background: 'rgba(51, 65, 85, 0.5)',
-    backdropFilter: 'blur(12px)',
-    padding: '24px',
-    borderRadius: '12px',
-    border: '1px solid rgba(251, 191, 36, 0.3)',
-    marginBottom: '24px'
+    background: 'var(--bg-section)',
+    backdropFilter: 'var(--blur-standard)',
+    padding: 'var(--spacing-lg)',
+    borderRadius: 'var(--radius-lg)',
+    border: '1px solid var(--color-section-iso-border)',
+    marginBottom: 'var(--spacing-lg)'
   },
   sectionAperture: {
-    background: 'rgba(51, 65, 85, 0.5)',
-    backdropFilter: 'blur(12px)',
-    padding: '24px',
-    borderRadius: '12px',
-    border: '1px solid rgba(168, 85, 247, 0.3)'
+    background: 'var(--bg-section)',
+    backdropFilter: 'var(--blur-standard)',
+    padding: 'var(--spacing-lg)',
+    borderRadius: 'var(--radius-lg)',
+    border: '1px solid var(--color-section-aperture-border)'
   },
   selectISO: {
     width: '100%',
-    padding: '12px',
-    background: 'rgb(30, 41, 59)',
-    border: '1px solid rgb(251, 191, 36)',
-    borderRadius: '8px',
-    color: 'white',
-    fontSize: '16px'
+    padding: 'var(--spacing-md)',
+    background: 'var(--bg-input)',
+    border: '1px solid var(--color-section-iso)',
+    borderRadius: 'var(--radius-md)',
+    color: 'var(--text-primary)',
+    fontSize: 'var(--font-size-base)'
   },
   selectAperture: {
     width: '100%',
-    padding: '12px',
-    background: 'rgb(30, 41, 59)',
-    border: '1px solid rgb(168, 85, 247)',
-    borderRadius: '8px',
-    color: 'white',
-    fontSize: '16px'
+    padding: 'var(--spacing-md)',
+    background: 'var(--bg-input)',
+    border: '1px solid var(--color-section-aperture)',
+    borderRadius: 'var(--radius-md)',
+    color: 'var(--text-primary)',
+    fontSize: 'var(--font-size-base)'
   },
 
-  // Couleurs de titre par section
-  titleMain: '#22d3ee',
-  titleISO: '#fbbf24',
-  titleAperture: '#a855f7',
-  titleSettings: '#22d3ee',
+  // Couleurs de titre par section (utilisent les variables CSS)
+  titleMain: 'var(--color-section-main)',
+  titleISO: 'var(--color-section-iso)',
+  titleAperture: 'var(--color-section-aperture)',
+  titleSettings: 'var(--color-section-settings)',
 
   // Utilitaires
   flexCenter: {
     display: 'flex',
     alignItems: 'center',
-    gap: '8px'
+    gap: 'var(--spacing-sm)'
   },
   textCenter: {
     textAlign: 'center'
@@ -343,7 +344,7 @@ const appStyles = {
   clickableLink: {
     cursor: 'pointer',
     textDecoration: 'underline',
-    color: '#fbbf24'
+    color: 'var(--color-section-iso)'
   }
 };
 
