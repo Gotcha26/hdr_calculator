@@ -16,19 +16,23 @@
 <body>
   <div id="root"></div>
   
-  <!-- 1. Base de données -->
+  <!-- 1. Informations de version -->
+  <script src="version.js"></script>
+  
+  <!-- 2. Base de données -->
   <script src="data/photoDatabase.js"></script>
   
-  <!-- 2. Utilitaires -->
+  <!-- 3. Utilitaires -->
   <script src="utils/utils.js"></script>
+  <script src="utils/calculations.js"></script>
   
-  <!-- 3. Styles (variable globale appStyles) -->
+  <!-- 4. Styles (variable globale appStyles) -->
   <script src="styles.js"></script>
   
-  <!-- 4. Helpers (fonction globale renderSuggestion) -->
+  <!-- 5. Helpers (fonction globale renderSuggestion) -->
   <script type="text/babel" src="utils/helpers.js"></script>
   
-  <!-- 5. Composants (variables globales) -->
+  <!-- 6. Composants (variables globales) -->
   <script type="text/babel" src="components/Header.jsx"></script>
   <script type="text/babel" src="components/Menu.jsx"></script>
   <script type="text/babel" src="components/Footer.jsx"></script>
@@ -38,7 +42,7 @@
   <script type="text/babel" src="components/RangePleine.jsx"></script>
   <script type="text/babel" src="components/SettingsPage.jsx"></script>
   
-  <!-- 6. Application principale -->
+  <!-- 7. Application principale -->
   <script type="text/babel" src="App.jsx"></script>
 </body>
 </html>
