@@ -1,6 +1,42 @@
 const { useState } = React;
 
 const HDRCalculator = () => {
+  // ============================================================================
+  // FONCTIONS HELPERS DE VALIDATION
+  // ============================================================================
+  
+  /**
+   * Valide qu'un index est dans les limites d'un tableau de la base de données
+   * @param {number} index - L'index à valider
+   * @param {string} arrayName - Nom du tableau ('shutter_speeds', 'iso_values', 'aperture_values')
+   * @returns {boolean} true si l'index est valide
+   */
+  const validateIndex = (index, arrayName) => {
+    if (typeof index !== 'number' || isNaN(index)) return false;
+    const array = photoDatabase[arrayName].values;
+    return index >= 0 && index < array.length;
+  };
+  
+  /**
+   * Récupère une valeur de manière sécurisée avec fallback
+   * @param {string} arrayName - Nom du tableau
+   * @param {number} index - Index demandé
+   * @param {number} fallbackIndex - Index de secours (par défaut 0)
+   * @returns {object} La valeur du tableau
+   */
+  const getValueSafe = (arrayName, index, fallbackIndex = 0) => {
+    const array = photoDatabase[arrayName].values;
+    if (validateIndex(index, arrayName)) {
+      return array[index];
+    }
+    console.warn(`⚠️ Index ${index} invalide pour ${arrayName}, utilisation de l'index ${fallbackIndex}`);
+    return array[fallbackIndex];
+  };
+  
+  // ============================================================================
+  // ÉTATS
+  // ============================================================================
+  
   // États de navigation
   const [currentPage, setCurrentPage] = useState('calculator');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -37,8 +73,8 @@ const HDRCalculator = () => {
     spacing: 2
   });
 
-  const [correction1Iso, setCorrection1Iso] = useState(12);
-  const [correction2Aperture, setCorrection2Aperture] = useState(9);
+  const [correction1Iso, setCorrection1Iso] = useState(9);  // ISO 400 (même que mainValues.iso)
+  const [correction2Aperture, setCorrection2Aperture] = useState(9);  // f/2.8 (même que mainValues.aperture)
   
   // Valeurs pour la section Plage entière
   const [rangeValues, setRangeValues] = useState({
@@ -50,6 +86,47 @@ const HDRCalculator = () => {
 
   // Calcul séquence HDR
   const calculateHDRSequence = (centerShutterIndex, centerApertureIndex, centerIsoIndex, brackets, spacing, skipSuggestions = false) => {
+    // ========== VALIDATION DES ENTRÉES ==========
+    const errorResult = {
+      sequence: [],
+      totalDuration: 0,
+      errors: [],
+      suggestions: [],
+      speedErrors: { min: null, max: null },
+      durationExceeded: false,
+      durationWarning: false
+    };
+    
+    // Validation centerShutterIndex
+    if (!validateIndex(centerShutterIndex, 'shutter_speeds')) {
+      errorResult.errors.push('Index de vitesse invalide');
+      return errorResult;
+    }
+    
+    // Validation centerApertureIndex
+    if (!validateIndex(centerApertureIndex, 'aperture_values')) {
+      errorResult.errors.push('Index d\'ouverture invalide');
+      return errorResult;
+    }
+    
+    // Validation centerIsoIndex
+    if (!validateIndex(centerIsoIndex, 'iso_values')) {
+      errorResult.errors.push('Index ISO invalide');
+      return errorResult;
+    }
+    
+    // Validation settings indexes
+    if (!validateIndex(settings.speedMin, 'shutter_speeds') || !validateIndex(settings.speedMax, 'shutter_speeds')) {
+      errorResult.errors.push('Limites de vitesse invalides dans les paramètres');
+      return errorResult;
+    }
+    
+    if (!validateIndex(settings.isoMin, 'iso_values') || !validateIndex(settings.isoMax, 'iso_values')) {
+      errorResult.errors.push('Limites ISO invalides dans les paramètres');
+      return errorResult;
+    }
+    
+    // ========== CALCUL ==========
     const halfBrackets = Math.floor(brackets / 2);
     const sequence = [];
     const errors = [];
@@ -137,6 +214,45 @@ const HDRCalculator = () => {
     const errors = [];
     const suggestions = [];
     
+    // ========== VALIDATION DES ENTRÉES ==========
+    if (!validateIndex(rangeValues.speedMin, 'shutter_speeds')) {
+      errors.push('Index de vitesse minimale invalide');
+    }
+    if (!validateIndex(rangeValues.speedMax, 'shutter_speeds')) {
+      errors.push('Index de vitesse maximale invalide');
+    }
+    if (!validateIndex(rangeValues.iso, 'iso_values')) {
+      errors.push('Index ISO invalide');
+    }
+    if (!validateIndex(rangeValues.aperture, 'aperture_values')) {
+      errors.push('Index d\'ouverture invalide');
+    }
+    if (!validateIndex(settings.artisticIsoMin, 'iso_values')) {
+      errors.push('Index ISO artistique minimal invalide');
+    }
+    if (!validateIndex(settings.artisticIsoMax, 'iso_values')) {
+      errors.push('Index ISO artistique maximal invalide');
+    }
+    if (!validateIndex(settings.artisticApertureMin, 'aperture_values')) {
+      errors.push('Index ouverture artistique minimale invalide');
+    }
+    if (!validateIndex(settings.artisticApertureMax, 'aperture_values')) {
+      errors.push('Index ouverture artistique maximale invalide');
+    }
+    
+    if (errors.length > 0) {
+      return { 
+        totalEV: 0, 
+        totalCrans: 0, 
+        centerSpeed: photoDatabase.shutter_speeds.values[0],
+        totalDuration: 0,
+        possibleSpacings: [], 
+        suggestions: [], 
+        errors 
+      };
+    }
+    
+    // ========== CALCUL ==========
     const minSpeed = photoDatabase.shutter_speeds.values[rangeValues.speedMin];
     const maxSpeed = photoDatabase.shutter_speeds.values[rangeValues.speedMax];
     
@@ -387,6 +503,44 @@ const HDRCalculator = () => {
 
   // Calcul Correction #1 (ISO)
   const calculateCorrection1 = () => {
+    // ========== VALIDATION DES ENTRÉES ==========
+    if (!validateIndex(correction1Iso, 'iso_values')) {
+      return {
+        sequence: [],
+        totalDuration: 0,
+        errors: ['Index ISO de correction invalide'],
+        suggestions: [],
+        speedErrors: { min: null, max: null },
+        durationExceeded: false,
+        durationWarning: false
+      };
+    }
+    
+    if (!validateIndex(mainValues.iso, 'iso_values')) {
+      return {
+        sequence: [],
+        totalDuration: 0,
+        errors: ['Index ISO principal invalide'],
+        suggestions: [],
+        speedErrors: { min: null, max: null },
+        durationExceeded: false,
+        durationWarning: false
+      };
+    }
+    
+    if (!validateIndex(settings.isoMin, 'iso_values')) {
+      return {
+        sequence: [],
+        totalDuration: 0,
+        errors: ['Index ISO minimal invalide dans les paramètres'],
+        suggestions: [],
+        speedErrors: { min: null, max: null },
+        durationExceeded: false,
+        durationWarning: false
+      };
+    }
+    
+    // ========== CALCUL ==========
     const isoShift = photoDatabase.iso_values.values[correction1Iso].stop_sixth - 
                      photoDatabase.iso_values.values[mainValues.iso].stop_sixth;
     
@@ -510,6 +664,44 @@ const HDRCalculator = () => {
 
   // Calcul Correction #2 (Ouverture)
   const calculateCorrection2 = () => {
+    // ========== VALIDATION DES ENTRÉES ==========
+    if (!validateIndex(correction2Aperture, 'aperture_values')) {
+      return {
+        sequence: [],
+        totalDuration: 0,
+        errors: ['Index ouverture de correction invalide'],
+        suggestions: [],
+        speedErrors: { min: null, max: null },
+        durationExceeded: false,
+        durationWarning: false
+      };
+    }
+    
+    if (!validateIndex(mainValues.aperture, 'aperture_values')) {
+      return {
+        sequence: [],
+        totalDuration: 0,
+        errors: ['Index ouverture principal invalide'],
+        suggestions: [],
+        speedErrors: { min: null, max: null },
+        durationExceeded: false,
+        durationWarning: false
+      };
+    }
+    
+    if (!validateIndex(settings.apertureMin, 'aperture_values') || !validateIndex(settings.apertureMax, 'aperture_values')) {
+      return {
+        sequence: [],
+        totalDuration: 0,
+        errors: ['Limites d\'ouverture invalides dans les paramètres'],
+        suggestions: [],
+        speedErrors: { min: null, max: null },
+        durationExceeded: false,
+        durationWarning: false
+      };
+    }
+    
+    // ========== CALCUL ==========
     const apertureShift = photoDatabase.aperture_values.values[correction2Aperture].stop_sixth - 
                           photoDatabase.aperture_values.values[mainValues.aperture].stop_sixth;
     
@@ -625,6 +817,12 @@ const HDRCalculator = () => {
 
   // Filtrer les ISO valides
   const getValidIsos = () => {
+    // Validation de mainValues.iso
+    if (!validateIndex(mainValues.iso, 'iso_values')) {
+      console.warn('⚠️ mainValues.iso invalide dans getValidIsos');
+      return [];
+    }
+    
     const allIsos = filterByIncrementAndLimits(
       photoDatabase.iso_values.values,
       settings.increment,
@@ -652,6 +850,12 @@ const HDRCalculator = () => {
 
   // Filtrer les ouvertures valides
   const getValidApertures = () => {
+    // Validation de mainValues.aperture
+    if (!validateIndex(mainValues.aperture, 'aperture_values')) {
+      console.warn('⚠️ mainValues.aperture invalide dans getValidApertures');
+      return [];
+    }
+    
     const allApertures = filterByIncrementAndLimits(
       photoDatabase.aperture_values.values,
       settings.increment,
@@ -663,6 +867,11 @@ const HDRCalculator = () => {
       const apertureIndex = photoDatabase.aperture_values.values.indexOf(aperture);
       const apertureShift = aperture.stop_sixth - photoDatabase.aperture_values.values[mainValues.aperture].stop_sixth;
       const adjustedShutterIndex = mainValues.shutter - apertureShift;
+      
+      // Validation de adjustedShutterIndex avant l'appel
+      if (!validateIndex(adjustedShutterIndex, 'shutter_speeds')) {
+        return false;
+      }
       
       const testResult = calculateHDRSequence(
         adjustedShutterIndex,
