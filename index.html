@@ -121,6 +121,45 @@
   
   <div id="root"></div>
   
+  <!-- Message si JavaScript désactivé -->
+  <noscript>
+    <div style="
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
+      color: white;
+      font-family: 'JetBrains Mono', monospace;
+      padding: 24px;
+      text-align: center;
+    ">
+      <div style="font-size: 4rem; margin-bottom: 24px;">⚠️</div>
+      <h1 style="font-size: 1.5rem; margin-bottom: 16px; color: #f59e0b;">
+        JavaScript requis
+      </h1>
+      <p style="color: #94a3b8; max-width: 400px; line-height: 1.6; margin-bottom: 24px;">
+        HDR Calculator nécessite JavaScript pour fonctionner.
+        Veuillez activer JavaScript dans les paramètres de votre navigateur.
+      </p>
+      <div style="
+        background: rgba(59, 130, 246, 0.1);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        border-radius: 8px;
+        padding: 16px;
+        max-width: 400px;
+      ">
+        <p style="font-size: 0.875rem; color: #60a5fa; margin-bottom: 8px;">
+          <strong>Chrome Android :</strong>
+        </p>
+        <p style="font-size: 0.75rem; color: #94a3b8;">
+          ⋮ Menu → Paramètres → Paramètres du site → JavaScript → Activé
+        </p>
+      </div>
+    </div>
+  </noscript>
+  
   <!-- 1. Informations de version -->
   <script src="version.js"></script>
   
@@ -154,7 +193,7 @@
   <script type="text/babel" src="components/SettingsPage.jsx"></script>
   
   <!-- 8. Application principale -->
-  <script type="text/babel" data-presets="react" src="App.jsx"></script>
+  <script type="text/babel" src="App.jsx"></script>
   
   <!-- 9. Service Worker & PWA Logic -->
   <script>
