@@ -1,7 +1,28 @@
-REFACTORING_GUIDE.md
-*.bak
-ToDo.md
+# Fichiers générés automatiquement
+version.js
+
+# Fichiers de déploiement (contient potentiellement des secrets)
 deploy.php
 
-# Fichier généré automatiquement lors du déploiement
-version.js
+# Fichiers temporaires et backup
+*.bak
+*.tmp
+*.swp
+*~
+
+# Notes et documentation interne
+ToDo.md
+REFACTORING_GUIDE.md
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Logs
+*.log
+npm-debug.log*

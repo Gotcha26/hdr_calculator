@@ -2,8 +2,26 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>HDR Calculator</title>
+  
+  <!-- PWA Meta Tags -->
+  <meta name="description" content="Calculateur professionnel de séquences HDR pour photographes">
+  <meta name="theme-color" content="#3b82f6">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="HDR Calc">
+  <meta name="mobile-web-app-capable" content="yes">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
+  
+  <!-- Favicon et icônes Apple -->
+  <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="icons/icon-16.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icons/icon-192.png">
   
   <!-- React -->
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -18,10 +36,89 @@
   
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: var(--font-family, 'JetBrains Mono', monospace); }
+    body { 
+      font-family: var(--font-family, 'JetBrains Mono', monospace);
+      padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+    }
+    
+    /* Bouton d'installation PWA */
+    .pwa-install-banner {
+      display: none;
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+      z-index: 1000;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 14px;
+      border: none;
+      animation: pulse 2s infinite;
+    }
+    
+    .pwa-install-banner:hover {
+      transform: translateX(-50%) scale(1.05);
+    }
+    
+    .pwa-install-banner.show {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .pwa-install-banner .close-btn {
+      margin-left: 12px;
+      opacity: 0.7;
+      font-size: 18px;
+    }
+    
+    .pwa-install-banner .close-btn:hover {
+      opacity: 1;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4); }
+      50% { box-shadow: 0 4px 30px rgba(59, 130, 246, 0.6); }
+    }
+    
+    /* Indicateur hors-ligne */
+    .offline-indicator {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: #f59e0b;
+      color: white;
+      text-align: center;
+      padding: 8px;
+      font-size: 12px;
+      z-index: 9999;
+    }
+    
+    .offline-indicator.show {
+      display: block;
+    }
   </style>
 </head>
 <body>
+  <!-- Indicateur hors-ligne -->
+  <div id="offline-indicator" class="offline-indicator">
+    📴 Mode hors-ligne - Les données sont en cache
+  </div>
+  
+  <!-- Bouton d'installation PWA -->
+  <button id="pwa-install-banner" class="pwa-install-banner">
+    <span>📲</span>
+    <span id="pwa-install-text">Installer l'application</span>
+    <span class="close-btn" id="pwa-install-close">✕</span>
+  </button>
+  
   <div id="root"></div>
   
   <!-- 1. Informations de version -->
@@ -35,18 +132,24 @@
   <script src="i18n/en.js"></script>
   <script src="i18n/index.js"></script>
   
-  <!-- 4. Utilitaires -->
+  <!-- 4. Système Premium -->
+  <script src="premium/licenseManager.js"></script>
+  
+  <!-- 5. Utilitaires -->
   <script src="utils/utils.js"></script>
   <script src="utils/calculationEngine.js"></script>
   <script src="utils/validationEngine.js"></script>
   
-  <!-- 5. Styles (variable globale appStyles) -->
+  <!-- 6. Styles (variable globale appStyles) -->
   <script src="styles.js"></script>
   
-  <!-- 6. Helpers (fonction globale renderSuggestion) -->
+  <!-- 7. Helpers (fonction globale renderSuggestion) -->
   <script type="text/babel" src="utils/helpers.js"></script>
   
-  <!-- 7. Composants (variables globales) -->
+  <!-- 8. Composants Premium UI -->
+  <script type="text/babel" src="premium/PremiumUI.jsx"></script>
+  
+  <!-- 9. Composants (variables globales) -->
   <script type="text/babel" src="components/Header.jsx"></script>
   <script type="text/babel" src="components/Menu.jsx"></script>
   <script type="text/babel" src="components/Footer.jsx"></script>
@@ -56,7 +159,107 @@
   <script type="text/babel" src="components/RangePleine.jsx"></script>
   <script type="text/babel" src="components/SettingsPage.jsx"></script>
   
-  <!-- 8. Application principale -->
+  <!-- 10. Application principale -->
   <script type="text/babel" src="App.jsx"></script>
+  
+  <!-- 9. Service Worker & PWA Logic -->
+  <script>
+    // Enregistrement du Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js')
+          .then((registration) => {
+            console.log('✅ Service Worker enregistré:', registration.scope);
+            
+            registration.addEventListener('updatefound', () => {
+              const newWorker = registration.installing;
+              newWorker.addEventListener('statechange', () => {
+                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                  if (confirm('Une nouvelle version est disponible. Recharger ?')) {
+                    newWorker.postMessage('skipWaiting');
+                    window.location.reload();
+                  }
+                }
+              });
+            });
+          })
+          .catch((error) => {
+            console.warn('⚠️ Service Worker non enregistré:', error);
+          });
+      });
+    }
+    
+    // Détection hors-ligne
+    const offlineIndicator = document.getElementById('offline-indicator');
+    
+    function updateOnlineStatus() {
+      if (!navigator.onLine) {
+        offlineIndicator.classList.add('show');
+      } else {
+        offlineIndicator.classList.remove('show');
+      }
+    }
+    
+    window.addEventListener('online', updateOnlineStatus);
+    window.addEventListener('offline', updateOnlineStatus);
+    updateOnlineStatus();
+    
+    // Bouton d'installation PWA
+    let deferredPrompt;
+    const installBanner = document.getElementById('pwa-install-banner');
+    const installClose = document.getElementById('pwa-install-close');
+    const installText = document.getElementById('pwa-install-text');
+    
+    function updateInstallText() {
+      if (typeof i18n !== 'undefined') {
+        const lang = i18n.getLanguage();
+        installText.textContent = lang === 'en' ? 'Install the app' : 'Installer l\'application';
+      }
+    }
+    
+    window.addEventListener('beforeinstallprompt', (e) => {
+      console.log('📲 PWA installable détectée');
+      e.preventDefault();
+      deferredPrompt = e;
+      
+      const dismissed = localStorage.getItem('pwa_install_dismissed');
+      if (!dismissed) {
+        installBanner.classList.add('show');
+        updateInstallText();
+      }
+    });
+    
+    installBanner.addEventListener('click', async (e) => {
+      if (e.target === installClose) {
+        installBanner.classList.remove('show');
+        localStorage.setItem('pwa_install_dismissed', 'true');
+        return;
+      }
+      
+      if (!deferredPrompt) return;
+      
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      
+      console.log('📲 Installation:', outcome);
+      
+      if (outcome === 'accepted') {
+        installBanner.classList.remove('show');
+      }
+      
+      deferredPrompt = null;
+    });
+    
+    window.addEventListener('appinstalled', () => {
+      console.log('✅ PWA installée');
+      installBanner.classList.remove('show');
+      deferredPrompt = null;
+    });
+    
+    if (window.matchMedia('(display-mode: standalone)').matches) {
+      console.log('📱 Mode standalone');
+      installBanner.classList.remove('show');
+    }
+  </script>
 </body>
 </html>
