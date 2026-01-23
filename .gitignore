@@ -3,6 +3,7 @@ version.js
 
 # Fichiers de déploiement (contient potentiellement des secrets)
 deploy.php
+deploy_manual.php
 
 # Fichiers temporaires et backup
 *.bak

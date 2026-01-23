@@ -1,8 +1,8 @@
-// service-worker.js - Gestion du cache pour mode hors-ligne PWA
+// service-worker.js - Phase 2 (sans premium)
 
-const CACHE_NAME = 'hdr-calculator-v1';
+const CACHE_NAME = 'hdr-calculator-v2';
 
-// Fichiers à mettre en cache pour le mode hors-ligne
+// Fichiers à mettre en cache
 const STATIC_ASSETS = [
   '/',
   '/index.html',
@@ -42,51 +42,24 @@ const STATIC_ASSETS = [
   '/icons/icon-512.png'
 ];
 
-// Ressources externes à mettre en cache
-const EXTERNAL_ASSETS = [
-  'https://unpkg.com/react@18/umd/react.production.min.js',
-  'https://unpkg.com/react-dom@18/umd/react-dom.production.min.js',
-  'https://unpkg.com/@babel/standalone/babel.min.js',
-  'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap'
-];
-
-// Installation : mise en cache des ressources statiques
+// Installation
 self.addEventListener('install', (event) => {
-  console.log('🔧 Service Worker: Installation...');
+  console.log('🔧 Service Worker v2: Installation...');
   
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
-        console.log('📦 Service Worker: Mise en cache des ressources statiques');
-        // Cache les ressources locales
+        console.log('📦 Mise en cache des ressources');
         return cache.addAll(STATIC_ASSETS.filter(url => !url.startsWith('http')))
-          .catch(err => {
-            console.warn('⚠️ Certaines ressources locales non cachées:', err);
-          });
-      })
-      .then(() => {
-        // Cache les ressources externes séparément (peuvent échouer)
-        return caches.open(CACHE_NAME).then(cache => {
-          return Promise.allSettled(
-            EXTERNAL_ASSETS.map(url => 
-              fetch(url, { mode: 'cors' })
-                .then(response => {
-                  if (response.ok) {
-                    return cache.put(url, response);
-                  }
-                })
-                .catch(() => console.warn(`⚠️ Impossible de cacher: ${url}`))
-            )
-          );
-        });
+          .catch(err => console.warn('⚠️ Certaines ressources non cachées:', err));
       })
       .then(() => self.skipWaiting())
   );
 });
 
-// Activation : nettoyage des anciens caches
+// Activation
 self.addEventListener('activate', (event) => {
-  console.log('✅ Service Worker: Activation');
+  console.log('✅ Service Worker v2: Activation');
   
   event.waitUntil(
     caches.keys()
@@ -95,7 +68,7 @@ self.addEventListener('activate', (event) => {
           cacheNames
             .filter((name) => name !== CACHE_NAME)
             .map((name) => {
-              console.log(`🗑️ Service Worker: Suppression ancien cache: ${name}`);
+              console.log(`🗑️ Suppression ancien cache: ${name}`);
               return caches.delete(name);
             })
         );
@@ -104,24 +77,16 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch : stratégie Cache First avec fallback Network
+// Fetch
 self.addEventListener('fetch', (event) => {
-  // Ignorer les requêtes non-GET
-  if (event.request.method !== 'GET') {
-    return;
-  }
-  
-  // Ignorer les requêtes chrome-extension et autres
-  if (!event.request.url.startsWith('http')) {
-    return;
-  }
+  if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith('http')) return;
   
   event.respondWith(
     caches.match(event.request)
       .then((cachedResponse) => {
-        // Retourner le cache si disponible
         if (cachedResponse) {
-          // En arrière-plan, mettre à jour le cache (stale-while-revalidate)
+          // Mise à jour en arrière-plan
           fetch(event.request)
             .then((networkResponse) => {
               if (networkResponse && networkResponse.ok) {
@@ -129,15 +94,13 @@ self.addEventListener('fetch', (event) => {
                   .then((cache) => cache.put(event.request, networkResponse));
               }
             })
-            .catch(() => {}); // Ignorer les erreurs réseau silencieusement
+            .catch(() => {});
           
           return cachedResponse;
         }
         
-        // Sinon, fetch depuis le réseau
         return fetch(event.request)
           .then((networkResponse) => {
-            // Mettre en cache la nouvelle ressource
             if (networkResponse && networkResponse.ok) {
               const responseClone = networkResponse.clone();
               caches.open(CACHE_NAME)
@@ -146,22 +109,20 @@ self.addEventListener('fetch', (event) => {
             return networkResponse;
           })
           .catch(() => {
-            // Fallback pour les pages HTML : retourner index.html
             if (event.request.headers.get('accept')?.includes('text/html')) {
               return caches.match('/index.html');
             }
-            // Pour les autres ressources, retourner une erreur
             return new Response('Hors ligne', { status: 503 });
           });
       })
   );
 });
 
-// Gestion des messages (pour forcer la mise à jour)
+// Messages
 self.addEventListener('message', (event) => {
   if (event.data === 'skipWaiting') {
     self.skipWaiting();
   }
 });
 
-console.log('🚀 Service Worker chargé');
+console.log('🚀 Service Worker v2 chargé');
