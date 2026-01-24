@@ -242,4 +242,41 @@
     --font-size-2xl: 1.25rem;
     --spacing-lg: 16px;
   }
+  
+  /* Grilles compactes pour mobile */
+  .mobile-grid-3col {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+  
+  .mobile-grid-2col {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  .mobile-grid-2col-stacked {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .mobile-grid-2col-stacked .mobile-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  
+  /* Ajustement des labels pour mobile */
+  .mobile-compact-label {
+    font-size: 0.7rem;
+    margin-bottom: 4px;
+  }
+  
+  /* Réduire le padding des selects sur mobile */
+  .form-select {
+    padding: 8px;
+    font-size: 0.875rem;
+  }
 }
