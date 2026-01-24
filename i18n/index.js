@@ -1,18 +1,18 @@
 // i18n/index.js - Gestionnaire d'internationalisation
 
 const i18n = {
-  // Langue actuelle (par défaut: français)
-  currentLang: 'fr',
+  // Langue actuelle (par défaut: anglais)
+  currentLang: 'en',
   
   // Langues disponibles
   availableLanguages: {
-    'fr': { name: 'Français', translations: null },
-    'en': { name: 'English', translations: null }
+    'en': { name: 'English', flag: '\uD83C\uDDEC\uD83C\uDDE7', translations: null }, // 🇬🇧
+    'fr': { name: 'Français', flag: '\uD83C\uDDEB\uD83C\uDDF7', translations: null }  // 🇫🇷
   },
   
   /**
    * Initialise le système i18n
-   * Charge la langue sauvegardée ou utilise le français par défaut
+   * Charge la langue sauvegardée ou utilise l'anglais par défaut
    */
   init: function() {
     // Charger les traductions
@@ -56,13 +56,31 @@ const i18n = {
   },
   
   /**
+   * Récupère le drapeau de la langue actuelle
+   * @returns {string} Emoji du drapeau
+   */
+  getCurrentFlag: function() {
+    return this.availableLanguages[this.currentLang]?.flag || '🌐';
+  },
+  
+  /**
+   * Récupère le drapeau d'une langue spécifique
+   * @param {string} lang - Code de la langue
+   * @returns {string} Emoji du drapeau
+   */
+  getFlag: function(lang) {
+    return this.availableLanguages[lang]?.flag || '🌐';
+  },
+  
+  /**
    * Récupère la liste des langues disponibles
-   * @returns {array} Liste des langues [{code, name}, ...]
+   * @returns {array} Liste des langues [{code, name, flag}, ...]
    */
   getAvailableLanguages: function() {
     return Object.entries(this.availableLanguages).map(([code, data]) => ({
       code,
-      name: data.name
+      name: data.name,
+      flag: data.flag
     }));
   },
   

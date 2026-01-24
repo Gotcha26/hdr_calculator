@@ -114,6 +114,8 @@ const translations_en = {
   "ISO Maximum": "Maximum ISO",
   "Vitesse Minimum": "Minimum Speed",
   "Vitesse Maximum": "Maximum Speed",
+  "ISO minimum": "Minimum ISO",
+  "ISO maximum": "Maximum ISO",
   
   // Lens
   "Ouverture maximale": "Maximum Aperture",
@@ -195,6 +197,5 @@ const translations_en = {
   "Langue de l'interface": "Interface language",
   "Général": "General",
   "Français": "Français",
-  "English": "English",
-  "Configuration matériel": "Hardware Configuration"
+  "English": "English"
 };

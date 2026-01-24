@@ -71,7 +71,9 @@ const SettingsPage = ({
                 style={appStyles.select}
               >
                 {i18n.getAvailableLanguages().map((lang) => (
-                  <option key={lang.code} value={lang.code}>{lang.name}</option>
+                  <option key={lang.code} value={lang.code}>
+                    {lang.flag} {lang.name}
+                  </option>
                 ))}
               </select>
               <p style={{...appStyles.helpText, fontStyle: 'italic'}}>
@@ -131,7 +133,7 @@ const SettingsPage = ({
                       style={appStyles.select}
                     >
                       {Object.entries(cameraTypes).map(([key, data]) => (
-                        <option key={key} value={key}>{data.name}</option>
+                        <option key={key} value={key}>{t(data.name)}</option>
                       ))}
                     </select>
                     <p style={{...appStyles.helpText, fontStyle: 'italic'}}>
