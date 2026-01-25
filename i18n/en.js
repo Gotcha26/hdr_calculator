@@ -1,5 +1,6 @@
 // i18n/en.js - English translations
 
+
 const translations_en = {
   // ============================================================================
   // GENERAL
@@ -63,10 +64,8 @@ const translations_en = {
   "Plage entière": "Full Range",
   "Vitesse minimale": "Minimum Speed",
   "Vitesse maximale": "Maximum Speed",
-  "pose longue": "long exposure",
-  "pose rapide": "fast exposure",
   "Amplitude totale": "Total Amplitude",
-  "Équivalent en crans": "Equivalent in clicks",
+  "Équivalent à": "Equivalent to",
   "cran": "click",
   "crans": "clicks",
   "Durée séquence": "Sequence Duration",
@@ -109,7 +108,7 @@ const translations_en = {
   "stops entiers": "full stops",
   "demi-stops": "half stops",
   "tiers de stops": "third stops",
-  "incréments": "increments",
+  "Incréments": "Increments",
   "ISO Minimum": "Minimum ISO",
   "ISO Maximum": "Maximum ISO",
   "Vitesse Minimum": "Minimum Speed",
@@ -120,23 +119,23 @@ const translations_en = {
   // Lens
   "Ouverture maximale": "Maximum Aperture",
   "Ouverture minimale": "Minimum Aperture",
-  "la plus lumineuse": "brightest",
+  "La plus lumineuse": "Brightest",
   "Plus petit nombre f/ = plus lumineux": "Smaller f/ number = brighter",
-  "fermée": "closed",
+  "Fermée": "Closed",
   "Plus grand nombre f/ = moins lumineux": "Larger f/ number = darker",
   
   // Artistic
   "Limite de durée séquence": "Sequence Duration Limit",
   "Aucune limite": "No limit",
-  "astrophotographie": "astrophotography",
+  "Astrophotographie": "Astrophotography",
   "Pour éviter le filé d'étoiles": "To avoid star trails",
-  "zone acceptable": "acceptable zone",
+  "Zone acceptable": "Acceptable zone",
   "Netteté faible mais acceptable": "Low but acceptable sharpness at small f/",
-  "zone optimale": "optimal zone",
+  "Zone optimale": "Optimal zone",
   "Zone de netteté optimale": "Optimal sharpness zone at large f/",
-  "qualité optimale": "optimal quality",
+  "Qualité optimale": "Optimal quality",
   "Différence peu perceptible en dessous": "Barely noticeable difference below",
-  "qualité acceptable": "acceptable quality",
+  "Qualité acceptable": "Acceptable quality",
   "Éviter d'aller au-delà pour la qualité": "Avoid going beyond for quality",
   "Retour au calcul": "Back to calculation",
   
@@ -153,14 +152,14 @@ const translations_en = {
   "Objectif au maximum": "Lens at maximum",
   "Filtres ND": "ND Filters",
   "Objectif plus lumineux": "Faster lens",
-  "Durée actuelle": "Current duration",
+  "Séquence actuelle": "Sequence duration",
   "limite": "limit",
   "Limite astrophoto dépassée": "Astrophoto limit exceeded",
   "désactiver": "disable",
   "Durée compatible astrophoto": "Astrophoto compatible duration",
-  "Optimum technique": "Technical optimum",
+  "Réglage conseillé": "Technical optimum",
   "plus bas": "lower",
-  "Durée optimale": "Optimal duration",
+  "Temps de la séquence": "Sequence duration",
   "Dépasse limite": "Exceeds limit",
   "Compatible": "Compatible",
   "Limite technique atteinte": "Technical limit reached",
@@ -183,7 +182,7 @@ const translations_en = {
   // ============================================================================
   // FOOTER
   // ============================================================================
-  "Outil professionnel pour le calcul de séquences HDR en photographie": "Professional tool for HDR sequence calculation in photography",
+  "Outil professionnel pour le calcul de séquences HDR en photographie.": "Professional tool for HDR sequence calculation in photography.",
   "Liens": "Links",
   "Soutenir le projet": "Support the project",
   "Informations": "Information",

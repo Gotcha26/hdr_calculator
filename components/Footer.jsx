@@ -16,7 +16,7 @@ const Footer = () => {
           <div>
             <h3 style={appStyles.footerTitle}>{t("HDR Calculator")}</h3>
             <p style={appStyles.footerText}>
-              {t("Outil professionnel pour le calcul de séquences HDR en photographie")}
+              {t("Outil professionnel pour le calcul de séquences HDR en photographie.")}
             </p>
           </div>
           

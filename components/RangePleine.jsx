@@ -137,7 +137,7 @@ const RangePleine = ({
                       ))}
                     </select>
                     <p style={{...appStyles.helpText, fontStyle: 'italic', fontSize: '0.65rem'}}>
-                      {t("pose longue")}
+                      {t("Pose longue")}
                     </p>
                   </div>
 
@@ -167,7 +167,7 @@ const RangePleine = ({
                       ))}
                     </select>
                     <p style={{...appStyles.helpText, fontStyle: 'italic', fontSize: '0.65rem'}}>
-                      {t("pose rapide")}
+                      {t("Pose rapide")}
                     </p>
                   </div>
                 </div>
@@ -242,7 +242,7 @@ const RangePleine = ({
                       </option>
                     ))}
                   </select>
-                  <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("pose longue")}</p>
+                  <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("Pose longue")}</p>
                 </div>
 
                 <div>
@@ -266,7 +266,7 @@ const RangePleine = ({
                       </option>
                     ))}
                   </select>
-                  <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("pose rapide")}</p>
+                  <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("Pose rapide")}</p>
                 </div>
               </>
             )}
@@ -283,7 +283,7 @@ const RangePleine = ({
                 <p style={appStyles.resultValue}>{rangeResult.totalEV.toFixed(2)} EV</p>
               </div>
               <div>
-                <p style={appStyles.resultLabel}>{t("Équivalent en crans")}</p>
+                <p style={appStyles.resultLabel}>{t("Équivalent à")}</p>
                 <p style={appStyles.resultValue}>
                   {Math.round(rangeResult.totalCrans)} {Math.round(rangeResult.totalCrans) > 1 ? t("crans") : t("cran")}
                 </p>

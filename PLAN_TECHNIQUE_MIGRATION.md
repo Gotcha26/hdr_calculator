@@ -334,7 +334,7 @@ function calculateCorrection1(newIsoIndex, mainValues, settings) {
           true
         );
         
-        specificSuggestions.push(`⏱️ Durée actuelle : ${result.totalDuration.toFixed(2)}s ${settings.durationLimit < 100 ? `(limite : ${settings.durationLimit}s)` : ''}`);
+        specificSuggestions.push(`⏱️ Séquence actuelle : ${result.totalDuration.toFixed(2)}s ${settings.durationLimit < 100 ? `(limite : ${settings.durationLimit}s)` : ''}`);
         if (result.durationWarning) {
           specificSuggestions.push(`⚠️ Limite astrophoto dépassée (désactiver)`);
         } else {
@@ -344,7 +344,7 @@ function calculateCorrection1(newIsoIndex, mainValues, settings) {
         specificSuggestions.push(`💡 Optimum technique : ISO ${bestIso.display} (${cransDiff} cran${cransDiff > 1 ? 's' : ''} plus bas)`);
         
         const optimalDurationStatus = bestResult.durationWarning ? '⚠️ Dépasse limite' : '✅ Compatible';
-        specificSuggestions.push(`🎯 Durée optimale : ${bestResult.totalDuration.toFixed(2)}s - ${optimalDurationStatus}`);
+        specificSuggestions.push(`🎯 Temps de la séquence : ${bestResult.totalDuration.toFixed(2)}s - ${optimalDurationStatus}`);
         
       } else if (bestIso.stop_sixth > minIso.stop_sixth) {
         specificSuggestions.push(`⏱️ Durée : ${result.totalDuration.toFixed(2)}s ${settings.durationLimit < 100 ? `(limite : ${settings.durationLimit}s)` : ''}`);
@@ -492,7 +492,7 @@ function calculateCorrection2(newApertureIndex, mainValues, settings) {
       }
     }
     
-    specificSuggestions.push(`⏱️ Durée actuelle : ${result.totalDuration.toFixed(2)}s ${settings.durationLimit < 100 ? `(limite : ${settings.durationLimit}s)` : ''}`);
+    specificSuggestions.push(`⏱️ Séquence actuelle : ${result.totalDuration.toFixed(2)}s ${settings.durationLimit < 100 ? `(limite : ${settings.durationLimit}s)` : ''}`);
     if (result.durationWarning) {
       specificSuggestions.push(`⚠️ Limite astrophoto dépassée (désactiver)`);
     } else {
@@ -503,7 +503,7 @@ function calculateCorrection2(newApertureIndex, mainValues, settings) {
       specificSuggestions.push(`💡 Optimum technique : ${bestAperture.display} (${cransDiff} cran${cransDiff > 1 ? 's' : ''})`);
       
       const optimalDurationStatus = bestDuration <= settings.durationLimit || settings.durationLimit >= 100 ? '✅ Compatible' : '⚠️ Dépasse limite';
-      specificSuggestions.push(`🎯 Durée optimale : ${bestDuration.toFixed(2)}s - ${optimalDurationStatus}`);
+      specificSuggestions.push(`🎯 Temps de la séquence : ${bestDuration.toFixed(2)}s - ${optimalDurationStatus}`);
     } else {
       if (currentAperture.numeric >= 5.6 && currentAperture.numeric <= 11) {
         specificSuggestions.push(`✅ Zone de netteté optimale atteinte`);

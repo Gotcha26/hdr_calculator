@@ -24,7 +24,7 @@ const renderSuggestion = (sug, index, setSettings, settings, isMobile = false) =
   
   if (isMobile) {
     // Pattern: "Label : valeur" → retour à la ligne
-    if (sug.match(/^(⏱️ Durée actuelle|💡 Optimum technique|🎯 Durée optimale) : /)) {
+    if (sug.match(/^(⏱️ Séquence actuelle|💡 Réglage conseillé|🎯 Temps de la séquence) : /)) {
       displayText = sug.replace(/^(.*?) : (.+)$/, '$1 :\n   $2');
     }
   }

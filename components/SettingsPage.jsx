@@ -206,7 +206,7 @@ const SettingsPage = ({
                       <option value="1:2">1:2 ({t("demi-stops")})</option>
                       <option value="1:3">1:3 ({t("tiers de stops")})</option>
                     </select>
-                    <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("incréments")}</p>
+                    <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("Incréments")}</p>
                   </div>
 
                   {/* ISO Min/Max - côte à côte sur mobile */}
@@ -289,7 +289,7 @@ const SettingsPage = ({
                           ))}
                         </select>
                         <p style={{...appStyles.helpText, fontStyle: 'italic', fontSize: '0.65rem'}}>
-                          {t("pose longue")}
+                          {t("Pose longue")}
                         </p>
                       </div>
 
@@ -307,7 +307,7 @@ const SettingsPage = ({
                           ))}
                         </select>
                         <p style={{...appStyles.helpText, fontStyle: 'italic', fontSize: '0.65rem'}}>
-                          {t("pose rapide")}
+                          {t("Pose rapide")}
                         </p>
                       </div>
                     </div>
@@ -324,7 +324,7 @@ const SettingsPage = ({
                             <option key={idx} value={idx}>{speed.display}</option>
                           ))}
                         </select>
-                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("pose longue")}</p>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("Pose longue")}</p>
                       </div>
 
                       <div>
@@ -338,7 +338,7 @@ const SettingsPage = ({
                             <option key={idx} value={idx + 30}>{speed.display}</option>
                           ))}
                         </select>
-                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("pose rapide")}</p>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("Pose rapide")}</p>
                       </div>
                     </>
                   )}
@@ -384,7 +384,7 @@ const SettingsPage = ({
                           ))}
                         </select>
                         <p style={{...appStyles.helpText, fontStyle: 'italic', fontSize: '0.65rem'}}>
-                          {t("la plus lumineuse")}
+                          {t("La plus lumineuse")}
                         </p>
                       </div>
 
@@ -402,7 +402,7 @@ const SettingsPage = ({
                           ))}
                         </select>
                         <p style={{...appStyles.helpText, fontStyle: 'italic', fontSize: '0.65rem'}}>
-                          {t("fermée")}
+                          {t("Fermée")}
                         </p>
                       </div>
                     </div>
@@ -419,7 +419,7 @@ const SettingsPage = ({
                             <option key={idx} value={idx}>{aperture.display}</option>
                           ))}
                         </select>
-                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("la plus lumineuse")}</p>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("La plus lumineuse")}</p>
                       </div>
 
                       <div>
@@ -433,7 +433,7 @@ const SettingsPage = ({
                             <option key={idx} value={idx}>{aperture.display}</option>
                           ))}
                         </select>
-                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("fermée")}</p>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("ermée")}</p>
                       </div>
                     </div>
                   )}
@@ -473,7 +473,7 @@ const SettingsPage = ({
                   <option key={val} value={val}>{val.toFixed(1)}s</option>
                 ))}
               </select>
-              <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("astrophotographie")} - {t("Pour éviter le filé d'étoiles")}</p>
+              <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("Astrophotographie")} - {t("Pour éviter le filé d'étoiles")}</p>
             </div>
 
             {/* Ouvertures - 2 colonnes */}
@@ -490,7 +490,7 @@ const SettingsPage = ({
                     return <option key={idx} value={idx}>{aperture.display}</option>;
                   })}
                 </select>
-                <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("zone acceptable")}</p>
+                <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("Zone acceptable")}</p>
               </div>
 
               <div>
@@ -505,7 +505,7 @@ const SettingsPage = ({
                     return <option key={idx} value={idx}>{aperture.display}</option>;
                   })}
                 </select>
-                <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("zone optimale")}</p>
+                <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("Zone optimale")}</p>
               </div>
             </div>
 
@@ -523,7 +523,7 @@ const SettingsPage = ({
                     return <option key={idx} value={idx}>{iso.display}</option>;
                   })}
                 </select>
-                <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("qualité optimale")}</p>
+                <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("Qualité optimale")}</p>
               </div>
 
               <div>
@@ -538,7 +538,7 @@ const SettingsPage = ({
                     return <option key={idx} value={idx}>{iso.display}</option>;
                   })}
                 </select>
-                <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("qualité acceptable")}</p>
+                <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("Qualité acceptable")}</p>
               </div>
             </div>
           </div>
