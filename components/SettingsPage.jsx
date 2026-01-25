@@ -1,4 +1,4 @@
-// components/SettingsPage.jsx - Page de configuration matériel (Phase 2 - Sans Premium)
+// components/SettingsPage.jsx - Page de configuration matériel (optimisé mobile)
 
 const SettingsPage = ({ 
   settings, 
@@ -8,10 +8,19 @@ const SettingsPage = ({
   cameraTypes 
 }) => {
   const [generalOpen, setGeneralOpen] = React.useState(true);
-  const [techOpen, setTechOpen] = React.useState(true);
+  const [techOpen, setTechOpen] = React.useState(false);
   const [artisticOpen, setArtisticOpen] = React.useState(false);
-  const [boitierOpen, setBoitierOpen] = React.useState(true);
-  const [objectifOpen, setObjectifOpen] = React.useState(true);
+  const [boitierOpen, setBoitierOpen] = React.useState(false);
+  const [objectifOpen, setObjectifOpen] = React.useState(false);
+  
+  // Détection mobile
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
+  
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   // Langue actuelle
   const [currentLang, setCurrentLang] = React.useState(i18n.getLanguage());
@@ -71,9 +80,7 @@ const SettingsPage = ({
                 style={appStyles.select}
               >
                 {i18n.getAvailableLanguages().map((lang) => (
-                  <option key={lang.code} value={lang.code}>
-                    {lang.flag} {lang.name}
-                  </option>
+                  <option key={lang.code} value={lang.code}>{lang.name}</option>
                 ))}
               </select>
               <p style={{...appStyles.helpText, fontStyle: 'italic'}}>
@@ -133,7 +140,7 @@ const SettingsPage = ({
                       style={appStyles.select}
                     >
                       {Object.entries(cameraTypes).map(([key, data]) => (
-                        <option key={key} value={key}>{t(data.name)}</option>
+                        <option key={key} value={key}>{data.name}</option>
                       ))}
                     </select>
                     <p style={{...appStyles.helpText, fontStyle: 'italic'}}>
@@ -202,61 +209,139 @@ const SettingsPage = ({
                     <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("incréments")}</p>
                   </div>
 
-                  {/* ISO Min/Max */}
-                  <div>
-                    <label style={appStyles.formLabel}>{t("ISO Minimum")}</label>
-                    <select 
-                      value={settings.isoMin} 
-                      onChange={(e) => setSettings({...settings, isoMin: parseInt(e.target.value)})} 
-                      style={appStyles.select}
-                    >
-                      {photoDatabase.iso_values.values.map((iso, idx) => (
-                        <option key={idx} value={idx}>{iso.display}</option>
-                      ))}
-                    </select>
-                  </div>
+                  {/* ISO Min/Max - côte à côte sur mobile */}
+                  {isMobile ? (
+                    <div style={{gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px'}}>
+                      <div>
+                        <label style={{...appStyles.formLabel, fontSize: '0.7rem', marginBottom: '4px'}}>
+                          {t("ISO Minimum")}
+                        </label>
+                        <select 
+                          value={settings.isoMin} 
+                          onChange={(e) => setSettings({...settings, isoMin: parseInt(e.target.value)})} 
+                          style={{...appStyles.select, padding: '8px', fontSize: '0.875rem'}}
+                        >
+                          {photoDatabase.iso_values.values.map((iso, idx) => (
+                            <option key={idx} value={idx}>{iso.display}</option>
+                          ))}
+                        </select>
+                      </div>
 
-                  <div>
-                    <label style={appStyles.formLabel}>{t("ISO Maximum")}</label>
-                    <select 
-                      value={settings.isoMax} 
-                      onChange={(e) => setSettings({...settings, isoMax: parseInt(e.target.value)})} 
-                      style={appStyles.select}
-                    >
-                      {photoDatabase.iso_values.values.map((iso, idx) => (
-                        <option key={idx} value={idx}>{iso.display}</option>
-                      ))}
-                    </select>
-                  </div>
+                      <div>
+                        <label style={{...appStyles.formLabel, fontSize: '0.7rem', marginBottom: '4px'}}>
+                          {t("ISO Maximum")}
+                        </label>
+                        <select 
+                          value={settings.isoMax} 
+                          onChange={(e) => setSettings({...settings, isoMax: parseInt(e.target.value)})} 
+                          style={{...appStyles.select, padding: '8px', fontSize: '0.875rem'}}
+                        >
+                          {photoDatabase.iso_values.values.map((iso, idx) => (
+                            <option key={idx} value={idx}>{iso.display}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <label style={appStyles.formLabel}>{t("ISO Minimum")}</label>
+                        <select 
+                          value={settings.isoMin} 
+                          onChange={(e) => setSettings({...settings, isoMin: parseInt(e.target.value)})} 
+                          style={appStyles.select}
+                        >
+                          {photoDatabase.iso_values.values.map((iso, idx) => (
+                            <option key={idx} value={idx}>{iso.display}</option>
+                          ))}
+                        </select>
+                      </div>
 
-                  {/* Vitesse Min/Max */}
-                  <div>
-                    <label style={appStyles.formLabel}>{t("Vitesse Minimum")}</label>
-                    <select 
-                      value={settings.speedMin} 
-                      onChange={(e) => setSettings({...settings, speedMin: parseInt(e.target.value)})} 
-                      style={appStyles.select}
-                    >
-                      {photoDatabase.shutter_speeds.values.slice(0, 30).map((speed, idx) => (
-                        <option key={idx} value={idx}>{speed.display}</option>
-                      ))}
-                    </select>
-                    <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("pose longue")}</p>
-                  </div>
+                      <div>
+                        <label style={appStyles.formLabel}>{t("ISO Maximum")}</label>
+                        <select 
+                          value={settings.isoMax} 
+                          onChange={(e) => setSettings({...settings, isoMax: parseInt(e.target.value)})} 
+                          style={appStyles.select}
+                        >
+                          {photoDatabase.iso_values.values.map((iso, idx) => (
+                            <option key={idx} value={idx}>{iso.display}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </>
+                  )}
 
-                  <div>
-                    <label style={appStyles.formLabel}>{t("Vitesse Maximum")}</label>
-                    <select 
-                      value={settings.speedMax} 
-                      onChange={(e) => setSettings({...settings, speedMax: parseInt(e.target.value)})} 
-                      style={appStyles.select}
-                    >
-                      {photoDatabase.shutter_speeds.values.slice(30).map((speed, idx) => (
-                        <option key={idx} value={idx + 30}>{speed.display}</option>
-                      ))}
-                    </select>
-                    <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("pose rapide")}</p>
-                  </div>
+                  {/* Vitesse Min/Max - côte à côte sur mobile */}
+                  {isMobile ? (
+                    <div style={{gridColumn: '1 / -1', display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px'}}>
+                      <div>
+                        <label style={{...appStyles.formLabel, fontSize: '0.7rem', marginBottom: '4px'}}>
+                          {t("Vitesse Minimum")}
+                        </label>
+                        <select 
+                          value={settings.speedMin} 
+                          onChange={(e) => setSettings({...settings, speedMin: parseInt(e.target.value)})} 
+                          style={{...appStyles.select, padding: '8px', fontSize: '0.875rem'}}
+                        >
+                          {photoDatabase.shutter_speeds.values.slice(0, 30).map((speed, idx) => (
+                            <option key={idx} value={idx}>{speed.display}</option>
+                          ))}
+                        </select>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic', fontSize: '0.65rem'}}>
+                          {t("pose longue")}
+                        </p>
+                      </div>
+
+                      <div>
+                        <label style={{...appStyles.formLabel, fontSize: '0.7rem', marginBottom: '4px'}}>
+                          {t("Vitesse Maximum")}
+                        </label>
+                        <select 
+                          value={settings.speedMax} 
+                          onChange={(e) => setSettings({...settings, speedMax: parseInt(e.target.value)})} 
+                          style={{...appStyles.select, padding: '8px', fontSize: '0.875rem'}}
+                        >
+                          {photoDatabase.shutter_speeds.values.slice(30).map((speed, idx) => (
+                            <option key={idx} value={idx + 30}>{speed.display}</option>
+                          ))}
+                        </select>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic', fontSize: '0.65rem'}}>
+                          {t("pose rapide")}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <>
+                      <div>
+                        <label style={appStyles.formLabel}>{t("Vitesse Minimum")}</label>
+                        <select 
+                          value={settings.speedMin} 
+                          onChange={(e) => setSettings({...settings, speedMin: parseInt(e.target.value)})} 
+                          style={appStyles.select}
+                        >
+                          {photoDatabase.shutter_speeds.values.slice(0, 30).map((speed, idx) => (
+                            <option key={idx} value={idx}>{speed.display}</option>
+                          ))}
+                        </select>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("pose longue")}</p>
+                      </div>
+
+                      <div>
+                        <label style={appStyles.formLabel}>{t("Vitesse Maximum")}</label>
+                        <select 
+                          value={settings.speedMax} 
+                          onChange={(e) => setSettings({...settings, speedMax: parseInt(e.target.value)})} 
+                          style={appStyles.select}
+                        >
+                          {photoDatabase.shutter_speeds.values.slice(30).map((speed, idx) => (
+                            <option key={idx} value={idx + 30}>{speed.display}</option>
+                          ))}
+                        </select>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("pose rapide")}</p>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -281,35 +366,78 @@ const SettingsPage = ({
                 <span>{t("Objectif")}</span>
               </h4>
               {objectifOpen && (
-                <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px'}}>
-                  <div>
-                    <label style={appStyles.formLabel}>{t("Ouverture maximale")}</label>
-                    <select 
-                      value={settings.apertureMin} 
-                      onChange={(e) => setSettings({...settings, apertureMin: parseInt(e.target.value)})} 
-                      style={appStyles.select}
-                    >
-                      {photoDatabase.aperture_values.values.map((aperture, idx) => (
-                        <option key={idx} value={idx}>{aperture.display}</option>
-                      ))}
-                    </select>
-                    <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("la plus lumineuse")}</p>
-                  </div>
+                <>
+                  {/* Ouvertures - côte à côte sur mobile */}
+                  {isMobile ? (
+                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px'}}>
+                      <div>
+                        <label style={{...appStyles.formLabel, fontSize: '0.7rem', marginBottom: '4px'}}>
+                          {t("Ouverture maximale")}
+                        </label>
+                        <select 
+                          value={settings.apertureMin} 
+                          onChange={(e) => setSettings({...settings, apertureMin: parseInt(e.target.value)})} 
+                          style={{...appStyles.select, padding: '8px', fontSize: '0.875rem'}}
+                        >
+                          {photoDatabase.aperture_values.values.map((aperture, idx) => (
+                            <option key={idx} value={idx}>{aperture.display}</option>
+                          ))}
+                        </select>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic', fontSize: '0.65rem'}}>
+                          {t("la plus lumineuse")}
+                        </p>
+                      </div>
 
-                  <div>
-                    <label style={appStyles.formLabel}>{t("Ouverture minimale")}</label>
-                    <select 
-                      value={settings.apertureMax} 
-                      onChange={(e) => setSettings({...settings, apertureMax: parseInt(e.target.value)})} 
-                      style={appStyles.select}
-                    >
-                      {photoDatabase.aperture_values.values.map((aperture, idx) => (
-                        <option key={idx} value={idx}>{aperture.display}</option>
-                      ))}
-                    </select>
-                    <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("fermée")}</p>
-                  </div>
-                </div>
+                      <div>
+                        <label style={{...appStyles.formLabel, fontSize: '0.7rem', marginBottom: '4px'}}>
+                          {t("Ouverture minimale")}
+                        </label>
+                        <select 
+                          value={settings.apertureMax} 
+                          onChange={(e) => setSettings({...settings, apertureMax: parseInt(e.target.value)})} 
+                          style={{...appStyles.select, padding: '8px', fontSize: '0.875rem'}}
+                        >
+                          {photoDatabase.aperture_values.values.map((aperture, idx) => (
+                            <option key={idx} value={idx}>{aperture.display}</option>
+                          ))}
+                        </select>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic', fontSize: '0.65rem'}}>
+                          {t("fermée")}
+                        </p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div style={{display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))', gap: '16px'}}>
+                      <div>
+                        <label style={appStyles.formLabel}>{t("Ouverture maximale")}</label>
+                        <select 
+                          value={settings.apertureMin} 
+                          onChange={(e) => setSettings({...settings, apertureMin: parseInt(e.target.value)})} 
+                          style={appStyles.select}
+                        >
+                          {photoDatabase.aperture_values.values.map((aperture, idx) => (
+                            <option key={idx} value={idx}>{aperture.display}</option>
+                          ))}
+                        </select>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("la plus lumineuse")}</p>
+                      </div>
+
+                      <div>
+                        <label style={appStyles.formLabel}>{t("Ouverture minimale")}</label>
+                        <select 
+                          value={settings.apertureMax} 
+                          onChange={(e) => setSettings({...settings, apertureMax: parseInt(e.target.value)})} 
+                          style={appStyles.select}
+                        >
+                          {photoDatabase.aperture_values.values.map((aperture, idx) => (
+                            <option key={idx} value={idx}>{aperture.display}</option>
+                          ))}
+                        </select>
+                        <p style={{...appStyles.helpText, fontStyle: 'italic'}}>{t("fermée")}</p>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
