@@ -1,4 +1,17 @@
-// utils/calculationEngine.js - Moteur de calcul HDR
+// utils/calculationEngine.js - Moteur de calcul HDR (VERSION SÉCURISÉE)
+
+// ============================================================================
+// FONCTIONS HELPERS DE VALIDATION
+// ============================================================================
+
+/**
+ * Valide qu'un index est dans les limites d'un tableau de la base de données
+ */
+function validateIndex(index, arrayName) {
+  if (typeof index !== 'number' || isNaN(index)) return false;
+  const array = photoDatabase[arrayName].values;
+  return index >= 0 && index < array.length;
+}
 
 /**
  * Calcule une séquence HDR avec bracketing
@@ -20,6 +33,47 @@ function calculateHDRSequence(
   settings,
   skipSuggestions = false
 ) {
+  // ========== VALIDATION DES ENTRÉES ==========
+  const errorResult = {
+    sequence: [],
+    totalDuration: 0,
+    errors: [],
+    suggestions: [],
+    speedErrors: { min: null, max: null },
+    durationExceeded: false,
+    durationWarning: false
+  };
+  
+  // Validation centerShutterIndex
+  if (!validateIndex(centerShutterIndex, 'shutter_speeds')) {
+    errorResult.errors.push('Index de vitesse invalide');
+    return errorResult;
+  }
+  
+  // Validation centerApertureIndex
+  if (!validateIndex(centerApertureIndex, 'aperture_values')) {
+    errorResult.errors.push('Index d\'ouverture invalide');
+    return errorResult;
+  }
+  
+  // Validation centerIsoIndex
+  if (!validateIndex(centerIsoIndex, 'iso_values')) {
+    errorResult.errors.push('Index ISO invalide');
+    return errorResult;
+  }
+  
+  // Validation settings indexes
+  if (!validateIndex(settings.speedMin, 'shutter_speeds') || !validateIndex(settings.speedMax, 'shutter_speeds')) {
+    errorResult.errors.push('Limites de vitesse invalides dans les paramètres');
+    return errorResult;
+  }
+  
+  if (!validateIndex(settings.isoMin, 'iso_values') || !validateIndex(settings.isoMax, 'iso_values')) {
+    errorResult.errors.push('Limites ISO invalides dans les paramètres');
+    return errorResult;
+  }
+  
+  // ========== CALCUL ==========
   const halfBrackets = Math.floor(brackets / 2);
   const sequence = [];
   const errors = [];
@@ -110,6 +164,44 @@ function calculateHDRSequence(
  * @returns {object} Résultat calcul + suggestions spécifiques ISO
  */
 function calculateCorrection1(newIsoIndex, mainValues, settings) {
+  // ========== VALIDATION DES ENTRÉES ==========
+  if (!validateIndex(newIsoIndex, 'iso_values')) {
+    return {
+      sequence: [],
+      totalDuration: 0,
+      errors: ['Index ISO de correction invalide'],
+      suggestions: [],
+      speedErrors: { min: null, max: null },
+      durationExceeded: false,
+      durationWarning: false
+    };
+  }
+  
+  if (!validateIndex(mainValues.iso, 'iso_values')) {
+    return {
+      sequence: [],
+      totalDuration: 0,
+      errors: ['Index ISO principal invalide'],
+      suggestions: [],
+      speedErrors: { min: null, max: null },
+      durationExceeded: false,
+      durationWarning: false
+    };
+  }
+  
+  if (!validateIndex(settings.isoMin, 'iso_values')) {
+    return {
+      sequence: [],
+      totalDuration: 0,
+      errors: ['Index ISO minimal invalide dans les paramètres'],
+      suggestions: [],
+      speedErrors: { min: null, max: null },
+      durationExceeded: false,
+      durationWarning: false
+    };
+  }
+  
+  // ========== CALCUL ==========
   const isoShift = photoDatabase.iso_values.values[newIsoIndex].stop_sixth - 
                    photoDatabase.iso_values.values[mainValues.iso].stop_sixth;
   
@@ -242,6 +334,44 @@ function calculateCorrection1(newIsoIndex, mainValues, settings) {
  * @returns {object} Résultat calcul + suggestions spécifiques ouverture
  */
 function calculateCorrection2(newApertureIndex, mainValues, settings) {
+  // ========== VALIDATION DES ENTRÉES ==========
+  if (!validateIndex(newApertureIndex, 'aperture_values')) {
+    return {
+      sequence: [],
+      totalDuration: 0,
+      errors: ['Index ouverture de correction invalide'],
+      suggestions: [],
+      speedErrors: { min: null, max: null },
+      durationExceeded: false,
+      durationWarning: false
+    };
+  }
+  
+  if (!validateIndex(mainValues.aperture, 'aperture_values')) {
+    return {
+      sequence: [],
+      totalDuration: 0,
+      errors: ['Index ouverture principal invalide'],
+      suggestions: [],
+      speedErrors: { min: null, max: null },
+      durationExceeded: false,
+      durationWarning: false
+    };
+  }
+  
+  if (!validateIndex(settings.apertureMin, 'aperture_values') || !validateIndex(settings.apertureMax, 'aperture_values')) {
+    return {
+      sequence: [],
+      totalDuration: 0,
+      errors: ['Limites d\'ouverture invalides dans les paramètres'],
+      suggestions: [],
+      speedErrors: { min: null, max: null },
+      durationExceeded: false,
+      durationWarning: false
+    };
+  }
+  
+  // ========== CALCUL ==========
   const apertureShift = photoDatabase.aperture_values.values[newApertureIndex].stop_sixth - 
                         photoDatabase.aperture_values.values[mainValues.aperture].stop_sixth;
   
@@ -355,6 +485,45 @@ function calculateRangePleine(rangeValues, settings) {
   const errors = [];
   const suggestions = [];
   
+  // ========== VALIDATION DES ENTRÉES ==========
+  if (!validateIndex(rangeValues.speedMin, 'shutter_speeds')) {
+    errors.push('Index de vitesse minimale invalide');
+  }
+  if (!validateIndex(rangeValues.speedMax, 'shutter_speeds')) {
+    errors.push('Index de vitesse maximale invalide');
+  }
+  if (!validateIndex(rangeValues.iso, 'iso_values')) {
+    errors.push('Index ISO invalide');
+  }
+  if (!validateIndex(rangeValues.aperture, 'aperture_values')) {
+    errors.push('Index d\'ouverture invalide');
+  }
+  if (!validateIndex(settings.artisticIsoMin, 'iso_values')) {
+    errors.push('Index ISO artistique minimal invalide');
+  }
+  if (!validateIndex(settings.artisticIsoMax, 'iso_values')) {
+    errors.push('Index ISO artistique maximal invalide');
+  }
+  if (!validateIndex(settings.artisticApertureMin, 'aperture_values')) {
+    errors.push('Index ouverture artistique minimale invalide');
+  }
+  if (!validateIndex(settings.artisticApertureMax, 'aperture_values')) {
+    errors.push('Index ouverture artistique maximale invalide');
+  }
+  
+  if (errors.length > 0) {
+    return { 
+      totalEV: 0, 
+      totalCrans: 0, 
+      centerSpeed: photoDatabase.shutter_speeds.values[0],
+      totalDuration: 0,
+      possibleSpacings: [], 
+      suggestions: [], 
+      errors 
+    };
+  }
+  
+  // ========== CALCUL ==========
   const minSpeed = photoDatabase.shutter_speeds.values[rangeValues.speedMin];
   const maxSpeed = photoDatabase.shutter_speeds.values[rangeValues.speedMax];
   
@@ -449,8 +618,6 @@ function calculateRangePleine(rangeValues, settings) {
     const currentAperture = photoDatabase.aperture_values.values[rangeValues.aperture];
     
     const artisticMinIso = photoDatabase.iso_values.values[settings.artisticIsoMin];
-    const artisticMaxIso = photoDatabase.iso_values.values[settings.artisticIsoMax];
-    const artisticMinAperture = photoDatabase.aperture_values.values[settings.artisticApertureMin];
     const artisticMaxAperture = photoDatabase.aperture_values.values[settings.artisticApertureMax];
     
     const halfBrackets = Math.floor(optimalConfig.brackets / 2);
