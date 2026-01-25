@@ -12,7 +12,7 @@ const i18n = {
   
   /**
    * Initialise le système i18n
-   * Charge la langue sauvegardée ou utilise l'anglais par défaut
+   * Charge la langue sauvegardée ou détecte celle du navigateur
    */
   init: function() {
     // Charger les traductions
@@ -23,12 +23,22 @@ const i18n = {
     const savedLang = localStorage.getItem('hdr_calculator_lang');
     if (savedLang && this.availableLanguages[savedLang]) {
       this.currentLang = savedLang;
+      console.log(`🌐 i18n initialisé - Langue sauvegardée: ${this.currentLang}`);
+    } else {
+      // Détection automatique de la langue du navigateur
+      const browserLang = navigator.language || navigator.userLanguage;
+      const langCode = browserLang.split('-')[0]; // 'fr-FR' -> 'fr'
+      
+      if (this.availableLanguages[langCode]) {
+        this.currentLang = langCode;
+        console.log(`🌐 i18n initialisé - Langue détectée: ${this.currentLang} (${browserLang})`);
+      } else {
+        console.log(`🌐 i18n initialisé - Langue par défaut: ${this.currentLang} (navigateur: ${browserLang})`);
+      }
     }
     
     // Mettre à jour l'attribut lang du HTML
     document.documentElement.lang = this.currentLang;
-    
-    console.log(`🌐 i18n initialisé - Langue: ${this.currentLang}`);
   },
   
   /**
