@@ -270,10 +270,16 @@ const MainSection = ({
             mainResult.durationWarning ? (
               <div>
                 <p style={appStyles.statusWarning}>
-                  ⚠️ {t("COMPLIQUÉ")} ({t("Durée astrophoto dépassée")})
+                  ⚠️ {t("COMPLIQUÉ")}
+                  {isMobile && <br />}
+                  {!isMobile && ' '}
+                  ({t("Durée astrophoto dépassée")})
                 </p>
                 <p style={{fontSize: '0.75rem', color: '#fed7aa', marginBottom: '12px'}}>
-                  {t("Durée")} {mainResult.totalDuration.toFixed(2)}s {t("dépasse")} {settings.durationLimit}s → {t("Risque de filé d'étoiles")}
+                  {t("Durée")} {mainResult.totalDuration.toFixed(2)}s {t("dépasse")} {settings.durationLimit}s
+                  {isMobile && <br />}
+                  {!isMobile && ' '}
+                  → {t("Risque de filé d'étoiles")}
                 </p>
                 <button 
                   onClick={() => setSettings({...settings, durationLimit: 999})} 

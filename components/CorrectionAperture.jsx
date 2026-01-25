@@ -1,6 +1,4 @@
-// components/CorrectionAperture.jsx - Section Correction Ouverture
-
-
+// components/CorrectionAperture.jsx - Section Correction Ouverture (optimisé mobile)
 
 const CorrectionAperture = ({ 
   section3Open,
@@ -15,6 +13,15 @@ const CorrectionAperture = ({
   getValidApertures,
   renderSuggestion
 }) => {
+  
+  // Détection mobile
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
+  
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   return (
     <div style={{...appStyles.sectionAperture, marginBottom: '24px'}}>
@@ -70,7 +77,9 @@ const CorrectionAperture = ({
                   <p style={appStyles.statusSuccess}>✅ {t("SÉQUENCE RÉALISABLE")}</p>
                   {correction2Result.suggestions.length > 0 && (
                     <ul style={appStyles.suggestionList}>
-                      {correction2Result.suggestions.map((sug, i) => renderSuggestion(sug, i, setSettings, settings))}
+                      {correction2Result.suggestions.map((sug, i) => 
+                        renderSuggestion(sug, i, setSettings, settings, isMobile)
+                      )}
                     </ul>
                   )}
                 </div>

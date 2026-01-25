@@ -1,6 +1,4 @@
-// components/CorrectionISO.jsx - Section Correction ISO
-
-
+// components/CorrectionISO.jsx - Section Correction ISO (optimisé mobile)
 
 const CorrectionISO = ({ 
   section2Open,
@@ -15,6 +13,15 @@ const CorrectionISO = ({
   getValidIsos,
   renderSuggestion
 }) => {
+  
+  // Détection mobile
+  const [isMobile, setIsMobile] = React.useState(window.innerWidth <= 768);
+  
+  React.useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   return (
     <div style={appStyles.sectionISO}>
@@ -70,7 +77,9 @@ const CorrectionISO = ({
                   <p style={appStyles.statusSuccess}>✅ {t("SÉQUENCE RÉALISABLE")}</p>
                   {correction1Result.suggestions.length > 0 && (
                     <ul style={appStyles.suggestionList}>
-                      {correction1Result.suggestions.map((sug, i) => renderSuggestion(sug, i, setSettings, settings))}
+                      {correction1Result.suggestions.map((sug, i) => 
+                        renderSuggestion(sug, i, setSettings, settings, isMobile)
+                      )}
                     </ul>
                   )}
                 </div>
